@@ -4,10 +4,10 @@ import  verifyToken from "../middlewares/verifyToken.js";
 import roleCheck from"../middlewares/roleCheck.js"
 import { Rating } from "../models/ratingModel.js";
 import { Product } from "../models/productModel.js";
-// import fileUpload from "express-fileupload"
+ import {upload} from "../uploads/multer.js"
 import path from 'path'
 import {
-    upload,
+    
     getAllProducts,
     createOneProduct,
     deleteProduct,

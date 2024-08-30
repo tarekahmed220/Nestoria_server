@@ -33,5 +33,5 @@ const upload =multer({
   limits: { fileSize: 1024 * 1024 * 5 } // Limit file size to 5MB
 });
 
-exports = {upload}
+export {upload}
   

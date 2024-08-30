@@ -1,8 +1,7 @@
 import AppError from "../handleErrors/appError.js";
 import catchAsync from "../handleErrors/catchAsync.js";
 import { Product } from "../models/productModel.js";
-import multer from "multer";
-    import path from 'path'
+
 import { deleteOne } from "./factory.js";
 
 
@@ -82,7 +81,7 @@ export{
     getOneProduct,
     deleteProduct,
     updateProduct,
-    upload,
+    
     
 }
 

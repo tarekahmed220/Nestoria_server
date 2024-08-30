@@ -1,13 +1,47 @@
 import AppError from "../handleErrors/appError.js";
 import catchAsync from "../handleErrors/catchAsync.js";
 import { Product } from "../models/productModel.js";
-
+import { upload } from "../uploads/multer.js";
 import { deleteOne } from "./factory.js";
+import { cloudinary } from "../uploads/cloudinary.js";
 
 
 
+const create1 = catchAsync(async (req, res) => {
+    //allowed nested routes
+    
+    if (!req.body.user) req.body.user = req.user.id;//from protect middleware
+    
+    const {productName,price,description,category} = req.body;
+    
+  
+      //Upload image to cloudinary
+      
+    const result = await cloudinary.v2.uploader.upload(req.file.path);
+      
+    //create order
+    const product = await Product.create({
+      productName,
+      price,
 
-
+      category,
+      description,
+      photo: result.secure_url,
+      cloudinary_id: result.public_id,
+      
+      user:req.user.id,
+   
+    });
+    
+    res.status(201).json({
+      status:"success",
+     data:{
+      product,
+     }
+    });
+    
+  });
+  
 // create
 const createOneProduct = catchAsync(async (req, res, next) => {
     const { productName, price,  description ,category} = req.body;
@@ -81,7 +115,7 @@ export{
     getOneProduct,
     deleteProduct,
     updateProduct,
-    
+    create1
     
 }
 

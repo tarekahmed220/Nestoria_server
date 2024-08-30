@@ -13,15 +13,15 @@ import {
     deleteProduct,
     getOneProduct,
     updateProduct,
-    
+    create1
   } from "../controllers/productController.js"
 import { createOneRate } from "../controllers/ratingController.js";
 const router=express.Router()
 
 
 
-
-    router.route('/').post(upload.single('photo'), createOneProduct)
+router.route('/cloud').post( verifyToken,upload.single('photo'), create1)
+    // router.route('/').post(upload.single('photo'), createOneProduct)
      router.route('/').get(getAllProducts)
 
     router

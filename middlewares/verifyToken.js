@@ -27,10 +27,10 @@ const verifyToken= catchAsync(async (req, res, next) => {
     //The payload is what was used to sign the token.
   const decoded = await util.promisify(jwt.verify)(token, "furnitureapp");
     // 3) Check if user still exists
-     console.log(decoded);
+     
     
     const currentUser = await User.findById(decoded.id);
-    console.log("current",currentUser);
+    
 
     if (!currentUser) {
       return next(

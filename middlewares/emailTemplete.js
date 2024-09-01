@@ -323,7 +323,7 @@ export const templeteEmail=(token)=>{
 											</tr>
 											<tr>
 												<td align="center" style="font-family: 'Segoe UI','Roboto','Helvetica Neue',Arial,sans-serif;color: #F7F7F7;font-size: 16px;mso-line-height-rule:exactly;line-height:24px;padding:10px; position:relative;opacity:0.999">
-													<h6>E-Learning<h6>
+													
 												</td>
 											</tr>
 											<tr>

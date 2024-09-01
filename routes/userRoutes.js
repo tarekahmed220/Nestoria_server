@@ -2,7 +2,7 @@ import express from "express";
 // import emailCheck from "../middlware/emailCheck.js"
 import verifyToken from "../middlewares/verifyToken.js"
 import roleCheck from "../middlewares/roleCheck.js"
-import {AddProductToCart} from "../controllers/cartController.js"
+import {AddProductToCart,removeProductFromCart} from "../controllers/cartController.js"
 import {
     getUsers,
     getOneUser
@@ -16,6 +16,8 @@ const router=express.Router()
  router.route('/:productId/ratings')
  router.patch('/add/:productId',verifyToken
     ,AddProductToCart)
+router.patch('/remove/:id',verifyToken
+        ,removeProductFromCart)   
 //  .post(
 //      verifyToken,
 //      restrictTo('client'),

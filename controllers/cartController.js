@@ -39,12 +39,12 @@ const AddProductToCart = catchAsync(async (req, res, next) => {
     });
 });
 const removeProductFromCart = catchAsync(async (req, res, next) => {
-    const { id } = req.body;
-
-    if (!id) {
+    const id = req.params.id;
+    req.body.product = req.body.product || id;
+    req.body.user = req.body.user || req.user.id;
+    if(!id){
         return next(new AppError("Product ID is required", 400));
     }
-
     const product = await Product.findById(id);
     if (!product) {
         return next(new AppError("Product not found", 404));
@@ -65,7 +65,7 @@ const removeProductFromCart = catchAsync(async (req, res, next) => {
 
     res.status(200).json({
         msg: "Product removed from cart successfully",
-        data: { cart: user.myCart }
+        
     });
 });
 

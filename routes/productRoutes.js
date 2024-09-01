@@ -9,12 +9,17 @@ import path from 'path'
 import {
     
     getAllProducts,
-    createOneProduct,
+    
     deleteProduct,
     getOneProduct,
     updateProduct,
     create1
   } from "../controllers/productController.js"
+  import {
+
+    getAllFavorites,
+    createOneFavorite,
+  } from "../controllers/favoriteController.js"
 import { createOneRate } from "../controllers/ratingController.js";
 const router=express.Router()
 
@@ -37,5 +42,11 @@ router
     verifyToken,
     roleCheck('client'),
     createOneRate)
+router
+.route('/:productId/favorites')
+.patch(
+    verifyToken,
+    roleCheck('client'),
+    createOneFavorite)
 export default router;
 //products/:productId/rating

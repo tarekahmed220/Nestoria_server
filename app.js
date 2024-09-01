@@ -9,6 +9,7 @@ import userRoutes from './routes/userRoutes.js'
  import authRoutes from './routes/authRoutes.js'
  import ratingRoutes from './routes/ratingRoutes.js'
 import productRoutes from './routes/productRoutes.js'
+import favoriteRoutes from './routes/favoriteRoutes.js'
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 
@@ -45,6 +46,8 @@ app.use((req,res,next)=>{
  app.use('/api/v1/fur/auth',authRoutes);
  app.use('/api/v1/fur/users',userRoutes);
  app.use('/api/v1/fur/rates',ratingRoutes);
+ app.use('/api/v1/fur/favorites', favoriteRoutes);
+ 
  app.use('/api/v1/fur/products',productRoutes);
 
 

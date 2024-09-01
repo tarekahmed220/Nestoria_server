@@ -31,18 +31,19 @@ const login=catchAsync(async(req,res,next)=>{
         }
     const user = await User.findOne({ email }).select('+password');//password.slect=true
         
-   if (!user||!(await user.correctPassword(password, user.password))) 
-    {
-   return next(new AppError('Incorrect email or password', 401));
+  //  if (!user ||!(await user.correctPassword(req.body.password, user.password))) 
+  //   {
+  //  return next(new AppError('Incorrect email or password', 401));
 
-    }
-    // user.password=undefined
-    //   let token=user.genAuthToken()
-    //   // 3) If everything ok, create and send token to client
-    //   res.status(200).json({
-    //     data:user,
-    //    token
-    //   });
+  //   }
+  if(!user&&!bcrypt.compareSync(req.body.password,user.password)){
+    
+    return next(new AppError("Incorrect email or password",422))
+ }
+//  if(user.isConfirm==false){
+//    return next(new AppError("you should verify u account",401))
+//  }
+  
   createSendToken(user, 200, res);
 }); 
 

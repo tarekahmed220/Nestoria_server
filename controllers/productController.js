@@ -41,41 +41,28 @@ const create1 = catchAsync(async (req, res) => {
     });
     
   });
-  
-// create
-const createOneProduct = catchAsync(async (req, res, next) => {
-    const { productName, price,  description ,category} = req.body;
-    // Ensure required fields are present
-    if (!productName || !price || !description||!category) {
-        return next(new AppError('Product name, price, and description are required', 400));
-    }
-    if(!req.file){
-        return next(new AppError('product Photo are required', 500));
-    }
-      
-        const photo= `http://localhost:5000/uploads/${req.file?.filename}`;
-    const newProduct = await Product.create({ productName, price,category, description ,photo});
-    console.log(newProduct)
-    res.status(200).json({
-        msg: "success",
-        data: newProduct,
-        
-    });
 
-});
 
-    //get all products
-const getAllProducts=catchAsync(async(req, res,next) => {
 
- 
-      
-        const products = await Product.find().sort({createdAt:-1})
-    
-  
-
-       res.status(200).json([{msg:"success"},{products}])
-    })
     //get product by id
+    const getAllProducts=catchAsync(async(req, res,next) => {
+    
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+    
+        const startIndex = (page - 1) * limit;
+        const total = await Product.countDocuments();
+    
+        const products = await Product.find().sort({createdAt:-1}).skip(startIndex).limit(limit);
+    
+        res.status(200).json({
+            page,
+            limit,
+            total,
+            pages: Math.ceil(total / limit),
+            data: products
+        });
+    });
 const getOneProduct=catchAsync(async(req,res,next)=>{
     const productId=req.params.id
     let product =await Product.findById(productId).populate('ratings')
@@ -99,7 +86,8 @@ const updateProduct=catchAsync(async(req,res,next)=>{
     if(!product){
         return next(new AppError("product not found",404))
     }
-    if (req.file) { req.body.photo=`http://localhost:5000/uploads/${req.file?.filename}`;}
+    const result = await cloudinary.v2.uploader.upload(req.file.path);
+    if (req.file) { req.body.photo=result.secure_url;}
     const updatedOne= await Product.findByIdAndUpdate(
         req.params.id, req.body,{
             new: true,
@@ -111,7 +99,7 @@ const updateProduct=catchAsync(async(req,res,next)=>{
 
 export{
     getAllProducts,
-    createOneProduct,
+    
     getOneProduct,
     deleteProduct,
     updateProduct,

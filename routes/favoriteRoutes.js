@@ -9,10 +9,10 @@ import {
 const router=express.Router()
 router
     .route('/:productId').post(verifyToken,roleCheck('client'),createOneFavorite);
-   
+router.route('/').get(verifyToken,roleCheck('client'),getAllFavorites)   
 export default router;
- // .get(verifyToken,roleCheck('client'),getAllFavorites)
+
     
-// router.post('/signup',signup);
+
 
 // router.get('/verify/:token', verifyAccount)

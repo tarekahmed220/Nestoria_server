@@ -14,7 +14,7 @@ const router=express.Router()
  router.get('/:id', getOneUser); 
 
  router.route('/:productId/ratings')
- router.patch('/add'//,verifyToken
+ router.patch('/add/:productId',verifyToken
     ,AddProductToCart)
 //  .post(
 //      verifyToken,

@@ -40,6 +40,7 @@ const userSchema=new Schema({
         minlength: 8,
         maxlength:50,
         trim:true,
+        select:false,
         // validate:function(e){
         //   return e===this.password
         // },

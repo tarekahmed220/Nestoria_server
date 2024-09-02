@@ -66,7 +66,18 @@ const removeProductFromCart = catchAsync(async (req, res, next) => {
         
     });
 });
+const getCart = catchAsync(async (req, res, next) => {
 
-export { AddProductToCart, removeProductFromCart };
+    const user = await User.findById(req.user.id);
+    if (!user) {
+        return next(new AppError("User not found", 404));
+    }
+
+    res.status(200).json({
+        msg: "success", 
+        cart:user.myCart
+    });
+})
+export { AddProductToCart, removeProductFromCart, getCart };
 
   

@@ -54,16 +54,15 @@ const login = catchAsync(async (req, res, next) => {
 
 
 const signup = catchAsync(async (req, res, next) => {
-
+      let userfound=await User.findOne({email:req.body.email})
+      if(userfound){return next(new AppError("already has an account",422))}
+      
     let password = bcrypt.hashSync(req.body.password, 8);
-    let passwordConfirm=req.body.passwordConfirm
-    if (password !== passwordConfirm) {
-        return next(new AppError("passwords are not the same", 401));
-    }
-    passwordConfirm=undefined
+ 
     const user = await User.insertMany({...req.body,password});
-    const token = signToken(user[0]._id, user[0].role);
-    user[0].password = undefined;
+    const token = jwt.sign({ email: user[0].email }, "furnitureapp", { expiresIn: "1d" }); // sign
+    // user[0].password = undefined;
+    // user[0].passwordConfirm=undefined
     try {
       await sendEmail(user[0].email);
     } catch (emailError) {
@@ -133,7 +132,8 @@ const resetPassword = catchAsync(async (req, res, next) => {
     return next(new AppError('Token is invalid or has expired', 400));
   }
   // 4) Set new password and confirm password
-  user.password = req.body.password;
+  let password = bcrypt.hashSync(req.body.password, 8);
+  user.password = password;
   user.passwordResetToken = undefined;
   user.passwordResetExpires = undefined;
   // 5) Save the user with the new password

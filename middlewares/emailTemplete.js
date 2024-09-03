@@ -279,7 +279,7 @@ export const templeteEmail=(token)=>{
 												<strong>Home page here</strong>
 												</a>
 												<br/>
-												 <a href="http://localhost:3000/login?token=${token}" style="border: 1px solid #ffffff; font-family: Verdana, Arial,sans-serif; font-size:14px; mso-line-height-rule: exactly;line-height: 14px; text-decoration: none; padding: 10px 31px; color:  #ffffff; font-weight:bold;display: block;"">
+												 <a href="http://localhost:3000/confirmemail?token=${token}" style="border: 1px solid #ffffff; font-family: Verdana, Arial,sans-serif; font-size:14px; mso-line-height-rule: exactly;line-height: 14px; text-decoration: none; padding: 10px 31px; color:  #ffffff; font-weight:bold;display: block;"">
 																<strong>Verify your account </strong>
 										</a>
 											</td>

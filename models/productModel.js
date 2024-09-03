@@ -1,6 +1,4 @@
 import mongoose ,{Schema,model}from "mongoose"
-
-
 import validator from 'validator'
 const productSchema=new Schema({
     productName:{
@@ -57,12 +55,7 @@ ratingQuantity:{
     type:Number,
     default:0
 },
-
-favorite:{
-    type:mongoose.Schema.ObjectId,
-    ref:'Favorite',
-   
-    },  
+ 
  __v:{
     type:Number,
     select:false
@@ -82,4 +75,10 @@ favorite:{
     foreignField:'Product',//from rating model
     localField:'_id'
     });
+    productSchema.virtual('favorites',{
+        ref:'Favorite',
+        foreignField:'Product',//from favorite model
+        localField:'_id'
+        });
+        
   export const Product=model("Product",productSchema)

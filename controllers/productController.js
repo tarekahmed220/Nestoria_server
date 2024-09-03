@@ -4,44 +4,38 @@ import { Product } from "../models/productModel.js";
 import { upload } from "../uploads/multer.js";
 import { deleteOne } from "./factory.js";
 import { cloudinary } from "../uploads/cloudinary.js";
-
-
+import { HomeProductsModel } from "../models/homeProductModel.js";
 
 const create1 = catchAsync(async (req, res) => {
-    //allowed nested routes
-    
-    if (!req.body.user) req.body.user = req.user.id;//from protect middleware
-    
-    const {productName,price,description,category} = req.body;
-    
-  
-      //Upload image to cloudinary
-      
-    const result = await cloudinary.v2.uploader.upload(req.file.path);
-      
-    //create order
-    const product = await Product.create({
-      productName,
-      price,
+  //allowed nested routes
 
-      category,
-      description,
-      photo: result.secure_url,
-      cloudinary_id: result.public_id,
-      
-      user:req.user.id,
-   
-    });
-    
-    res.status(201).json({
-      status:"success",
-     data:{
-      product,
-     }
-    });
-    
+  if (!req.body.user) req.body.user = req.user.id; //from protect middleware
+
+  const { productName, price, description, category } = req.body;
+
+  //Upload image to cloudinary
+
+  const result = await cloudinary.v2.uploader.upload(req.file.path);
+
+  //create order
+  const product = await Product.create({
+    productName,
+    price,
+
+    category,
+    description,
+    photo: result.secure_url,
+    cloudinary_id: result.public_id,
+
+    user: req.user.id,
   });
 
+  res.status(201).json({
+    status: "success",
+    data: {
+      product,
+    },
+  });
 
 
     //get product by id
@@ -97,15 +91,24 @@ const updateProduct=catchAsync(async(req,res,next)=>{
 
 })
 
+// get home products
+
+const getHomeProducts = catchAsync(async (req, res, next) => {
+  const homeProducts = await HomeProductsModel.find().sort({ createdAt: -1 });
+
+  res.status(200).json([{ msg: "success" }, { homeProducts }]);
+});
+
 export{
     getAllProducts,
     
     getOneProduct,
     deleteProduct,
     updateProduct,
-    create1
-    
+    create1,
+     getHomeProducts,
 }
 
 
   
+

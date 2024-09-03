@@ -1,3 +1,4 @@
+
 import "dotenv/config"
 import express from'express';
 import {dbConnect}  from './dbConnect.js'
@@ -13,29 +14,40 @@ import productRoutes from './routes/productRoutes.js'
 import favoriteRoutes from './routes/favoriteRoutes.js'
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
+import { dirname } from "path";
 
-import { dirname } from 'path';
-
-
- import path from 'path';
-
+import path from "path";
 
 const __dirname = path.resolve();
 const app = express();
 
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://nestoria-user-front.vercel.app",
+];
 
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  })
+);
 
-app.use(cors({origin:"http://localhost:3000",credentials:true})) 
 app.use(express.json());
 
 // app.use(express.static(__dirname + "../uploads"));//work with react//
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
+dbConnect();
 
-
-dbConnect()
- 
 //test middleware
+
 app.use((req,res,next)=>{
     req.requestTime=new Date().toISOString()
     next()
@@ -56,6 +68,6 @@ app.use((req,res,next)=>{
     return next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));//update here by return//class AppError extends Error
   });
 //exports.ErrorRequestHandler if next function is error
-app.use(globalErrorHandler)
+app.use(globalErrorHandler);
 
 export default app;

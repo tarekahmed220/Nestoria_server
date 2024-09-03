@@ -1,3 +1,4 @@
+import "dotenv/config"
 import express from'express';
 import {dbConnect}  from './dbConnect.js'
 import { Product } from './models/productModel.js';

@@ -10,7 +10,7 @@ import sendEmail2 from '../middlewares/email2.js'
 const signToken = (id,role) => {
   return jwt
       .sign({ id,role},
-      "ThePassword" ,
+      "furnitureapp", 
       {expiresIn:"100d"},);
   };
   const createSendToken = (user, statusCode, res) => {
@@ -56,6 +56,11 @@ const login = catchAsync(async (req, res, next) => {
 const signup = catchAsync(async (req, res, next) => {
 
     let password = bcrypt.hashSync(req.body.password, 8);
+    let passwordConfirm=req.body.passwordConfirm
+    if (password !== passwordConfirm) {
+        return next(new AppError("passwords are not the same", 401));
+    }
+    passwordConfirm=undefined
     const user = await User.insertMany({...req.body,password});
     const token = signToken(user[0]._id, user[0].role);
     user[0].password = undefined;

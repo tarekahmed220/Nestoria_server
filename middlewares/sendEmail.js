@@ -22,7 +22,6 @@ const transporter = nodemailer.createTransport({
     text: "Verify Your Email?", 
     html: templeteEmail(token), 
   });
-
   console.log("Message sent: %s", info.messageId);
   
 }

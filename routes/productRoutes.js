@@ -17,7 +17,7 @@ import {
   } from "../controllers/productController.js"
   import {
 
-    getAllFavorites,
+    
     createOneFavorite,
   } from "../controllers/favoriteController.js"
 import { createOneRate } from "../controllers/ratingController.js";

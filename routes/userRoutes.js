@@ -2,6 +2,7 @@ import express from "express";
 // import emailCheck from "../middlware/emailCheck.js"
 import verifyToken from "../middlewares/verifyToken.js"
 import roleCheck from "../middlewares/roleCheck.js"
+import  verifyAccount  from "../middlewares/vieifyAccount.js";
 import {AddProductToCart,removeProductFromCart} from "../controllers/cartController.js"
 import {
     getUsers,
@@ -26,5 +27,5 @@ router.patch('/remove/:id',verifyToken
 // router.delete('/:id',deleteUser);
 
 
-// router.get('/verify/:token', verifyAccount)
+router.get('/verify/:token', verifyAccount)
 export default router;

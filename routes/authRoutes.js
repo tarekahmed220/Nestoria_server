@@ -1,6 +1,6 @@
 import express from "express";
 // import emailCheck from "../middlewares/emailCheck.js"
-
+import verifyAccount from "../middlewares/vieifyAccount.js";
 import {
 
     signup,
@@ -14,5 +14,5 @@ router.post('/signup',validation(userValidationSchema),signup);
 router.post('/login',validation(userLogIn),login)
 
 
-// router.get('/verify/:token', verifyAccount)
+ router.get('/verify/:token', verifyAccount)
 export default router;

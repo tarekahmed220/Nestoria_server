@@ -6,9 +6,7 @@ import { User } from "../models/userModel.js";
 
 // //create add to cart
 const AddProductToCart = catchAsync(async (req, res, next) => {
-   // const { id } = req.body;
-
-   // if (!id) {
+  
     
     const productId = req.params.productId;
     req.body.product = req.body.product || productId;

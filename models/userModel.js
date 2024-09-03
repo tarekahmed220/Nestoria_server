@@ -30,7 +30,7 @@ const userSchema=new Schema({
         type: String,
         required: [true, 'Please provide a password'],
         minlength: 8,
-        maxlength:50,
+        maxlength:250,
         select:false,
         trim:true,
       },

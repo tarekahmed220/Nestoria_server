@@ -16,6 +16,7 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 import { dirname } from "path";
 
 import path from "path";
+import cartRoutes from "./modules/cart/cart.routes.js";
 
 const __dirname = path.resolve();
 const app = express();
@@ -47,6 +48,7 @@ dbConnect();
 
 //test middleware
 
+
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
   next();
@@ -64,6 +66,7 @@ app.all("*", (req, res, next) => {
     new AppError(`Can't find ${req.originalUrl} on this server!`, 404)
   ); //update here by return//class AppError extends Error
 });
+
 //exports.ErrorRequestHandler if next function is error
 app.use(globalErrorHandler);
 

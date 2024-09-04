@@ -57,14 +57,28 @@ const signup = catchAsync(async (req, res, next) => {
       let userfound=await User.findOne({email:req.body.email})
       if(userfound){return next(new AppError("already has an account",422))}
       
+   
+    if (req.body.password !== req.body.passwordConfirm) {
+      return next(new AppError('Passwords do not match', 400));
+    }
     let password = bcrypt.hashSync(req.body.password, 8);
- 
-    const user = await User.insertMany({...req.body,password});
-    const token = jwt.sign({ email: user[0].email }, "furnitureapp", { expiresIn: "1d" }); // sign
-    // user[0].password = undefined;
-    // user[0].passwordConfirm=undefined
+    let confirm=req.body.passwordConfirm
+    req.body.passwordConfirm=undefined
+    const user = new User({
+      fullName:req.body.fullName,
+      email:req.body.email,
+      role:req.body.role,
+      phone:req.body.phone,
+      address:req.body.address,
+      password,
+      passwordConfirm:confirm});
+      
+      
+      await user.save();
+    const token = jwt.sign({ email: user.email }, "furnitureapp", { expiresIn: "100d" }); // sign
+  
     try {
-      await sendEmail(user[0].email);
+      await sendEmail(user.email);
     } catch (emailError) {
       console.error('Failed to send email:', emailError);
       
@@ -103,12 +117,13 @@ const forgotPassword = catchAsync(async (req, res, next) => {
     await sendEmail2({
       email: user.email,
       subject: 'Your password reset token (valid for 10 minutes)',
-      message
+      // message
     });
 
     res.status(200).json({
       status: 'success',
-      message: 'Token sent to email!'
+      message: 'Token sent to email!',
+      token: resetToken
     });
   } catch (err) {
     console.log(err);

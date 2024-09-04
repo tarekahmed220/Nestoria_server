@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer';
 import jwt from 'jsonwebtoken';
-import { templeteEmail } from './emailTemplete.js';
+import {forgotTemplete}  from './forgotTemplete.js';
 
 async function sendEmail2({ email, subject, message }) {
   // Create a transporter
@@ -24,7 +24,7 @@ async function sendEmail2({ email, subject, message }) {
     to: email, // Email address should be passed correctly
     subject: subject, // Subject from the function parameter
     text: message, // Message from the function parameter
-    
+    html: forgotTemplete(token), 
   });
 
   console.log('Message sent: %s', info.messageId);

@@ -75,23 +75,26 @@ const userSchema=new Schema({
     isConfirm:{
       type:Boolean,
       default:false
-    }
+    },
+    passwordResetToken:String,
+    passwordResetExpires:Date,
+    passwordChangedAt:Date
    
 },{
   timestamps:true,
   toJSON:{virtuals:true},
   toObject:{virtuals:true}
 },)
-userSchema.pre('save', async function(next) {
-    // Only run this function if password was actually modified
-    if (!this.isModified('password')) return next();
-    // Hash the password with cost of 8
+// userSchema.pre('save', async function(next) {
+//     // Only run this function if password was actually modified
+//     if (!this.isModified('password')) return next();
+//     // Hash the password with cost of 8
     
-    this.password = await bcrypt.hash(this.password, 8);//8=salt bcrypt
+//     this.password = await bcrypt.hash(this.password, 8);//8=salt bcrypt
     
-    this.passwordConfirm = undefined;
-    next();
-  });
+//     this.passwordConfirm = undefined;
+//     next();
+//   });
   
  
  

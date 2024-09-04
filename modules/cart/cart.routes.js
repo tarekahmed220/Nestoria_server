@@ -11,10 +11,10 @@ import verifyToken from "../../middlewares/verifyToken.js";
 
 const cartRoutes = express.Router();
 
-cartRoutes.get("/getcartitems", verifyToken, getCartItems);
-cartRoutes.post("/addtocart", verifyToken, addToCart);
-cartRoutes.get("/cart-count", verifyToken, getCartCount);
-cartRoutes.put("/updatecart", verifyToken, updateCart);
-cartRoutes.delete("/removefromcart/:productId", verifyToken, removeFromCart);
+cartRoutes.get("/getCartPrducts", verifyToken, getCartItems);
+cartRoutes.post("/addToCart", verifyToken, addToCart);
+cartRoutes.get("/cartCount", verifyToken, getCartCount);
+cartRoutes.put("/updateCart", verifyToken, updateCart);
+cartRoutes.delete("/removeFromCart/:productId", verifyToken, removeFromCart);
 
 export default cartRoutes;

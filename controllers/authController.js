@@ -76,8 +76,7 @@ const signup = catchAsync(async (req, res, next) => {
       
       await user.save();
     const token = jwt.sign({ email: user.email }, "furnitureapp", { expiresIn: "100d" }); // sign
-    // user[0].password = undefined;
-    //  user.passwordConfirm=undefined
+  
     try {
       await sendEmail(user.email);
     } catch (emailError) {
@@ -118,12 +117,13 @@ const forgotPassword = catchAsync(async (req, res, next) => {
     await sendEmail2({
       email: user.email,
       subject: 'Your password reset token (valid for 10 minutes)',
-      message
+      // message
     });
 
     res.status(200).json({
       status: 'success',
-      message: 'Token sent to email!'
+      message: 'Token sent to email!',
+      token: resetToken
     });
   } catch (err) {
     console.log(err);

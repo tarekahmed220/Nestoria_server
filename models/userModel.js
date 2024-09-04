@@ -75,7 +75,10 @@ const userSchema=new Schema({
     isConfirm:{
       type:Boolean,
       default:false
-    }
+    },
+    passwordResetToken:String,
+    passwordResetExpires:Date,
+    passwordChangedAt:Date
    
 },{
   timestamps:true,

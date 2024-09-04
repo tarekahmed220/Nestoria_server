@@ -1,18 +1,17 @@
-
-import "dotenv/config"
-import express from'express';
-import {dbConnect}  from './dbConnect.js'
-import { Product } from './models/productModel.js';
-import AppError from './handleErrors/appError.js';
-import globalErrorHandler from './handleErrors/globalError.js';
-
- import cors from 'cors'
-import userRoutes from './routes/userRoutes.js'
- import authRoutes from './routes/authRoutes.js'
- import ratingRoutes from './routes/ratingRoutes.js'
-import productRoutes from './routes/productRoutes.js'
-import favoriteRoutes from './routes/favoriteRoutes.js'
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+import "dotenv/config";
+import express from "express";
+import { dbConnect } from "./dbConnect.js";
+import { Product } from "./models/productModel.js";
+import AppError from "./handleErrors/appError.js";
+import globalErrorHandler from "./handleErrors/globalError.js";
+import cors from "cors";
+import userRoutes from "./routes/userRoutes.js";
+import authRoutes from "./routes/authRoutes.js";
+import ratingRoutes from "./routes/ratingRoutes.js";
+import productRoutes from "./routes/productRoutes.js";
+import favoriteRoutes from "./routes/favoriteRoutes.js";
+import workshopRoutes from "./routes/workshopRoutes.js";
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 import { dirname } from "path";
 
@@ -48,25 +47,23 @@ dbConnect();
 
 //test middleware
 
-app.use((req,res,next)=>{
-    req.requestTime=new Date().toISOString()
-    next()
-})
+app.use((req, res, next) => {
+  req.requestTime = new Date().toISOString();
+  next();
+});
 
-  
+app.use("/api/v1/fur/auth", authRoutes);
+app.use("/api/v1/fur/users", userRoutes);
+app.use("/api/v1/fur/rates", ratingRoutes);
+app.use("/api/v1/fur/favorites", favoriteRoutes);
+app.use("/api/v1/fur/products", productRoutes);
+app.use("/api/v1/fur/workshops", workshopRoutes);
 
-
- app.use('/api/v1/fur/auth',authRoutes);
- app.use('/api/v1/fur/users',userRoutes);
- app.use('/api/v1/fur/rates',ratingRoutes);
- app.use('/api/v1/fur/favorites', favoriteRoutes);
- 
- app.use('/api/v1/fur/products',productRoutes);
-
-
- app.all('*', (req, res, next) => {
-    return next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));//update here by return//class AppError extends Error
-  });
+app.all("*", (req, res, next) => {
+  return next(
+    new AppError(`Can't find ${req.originalUrl} on this server!`, 404)
+  ); //update here by return//class AppError extends Error
+});
 //exports.ErrorRequestHandler if next function is error
 app.use(globalErrorHandler);
 

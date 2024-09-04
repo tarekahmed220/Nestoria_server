@@ -59,6 +59,7 @@ const getAllProducts = catchAsync(async (req, res, next) => {
     data: products,
   });
 });
+
 const getOneProduct = catchAsync(async (req, res, next) => {
   const productId = req.params.id;
   let product = await Product.findById(productId).populate("ratings");

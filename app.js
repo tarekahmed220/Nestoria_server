@@ -17,6 +17,7 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 import { dirname } from "path";
 
 import path from "path";
+import cartRoutes from "./modules/cart/cart.routes.js";
 
 const __dirname = path.resolve();
 const app = express();
@@ -53,7 +54,7 @@ app.use((req,res,next)=>{
     next()
 })
 
-  
+  app.use(cartRoutes)
 
 
  app.use('/api/v1/fur/auth',authRoutes);

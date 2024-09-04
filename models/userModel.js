@@ -82,16 +82,16 @@ const userSchema=new Schema({
   toJSON:{virtuals:true},
   toObject:{virtuals:true}
 },)
-userSchema.pre('save', async function(next) {
-    // Only run this function if password was actually modified
-    if (!this.isModified('password')) return next();
-    // Hash the password with cost of 8
+// userSchema.pre('save', async function(next) {
+//     // Only run this function if password was actually modified
+//     if (!this.isModified('password')) return next();
+//     // Hash the password with cost of 8
     
-    this.password = await bcrypt.hash(this.password, 8);//8=salt bcrypt
+//     this.password = await bcrypt.hash(this.password, 8);//8=salt bcrypt
     
-    this.passwordConfirm = undefined;
-    next();
-  });
+//     this.passwordConfirm = undefined;
+//     next();
+//   });
   
  
  

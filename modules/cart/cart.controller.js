@@ -53,7 +53,7 @@ const updateCart = catchAsync(async function (req, res) {
   if (cart) {
     cart.quantity = quantity;
     await cart.save();
-    res.json({ id: cart._id });
+    res.json({ cart });
   } else {
     return res.status(404).json({ message: "Cart item not found" });
   }

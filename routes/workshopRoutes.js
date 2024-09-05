@@ -11,6 +11,6 @@ router.post("/add", addWorkshop);
 
 router.delete("/delete/:workshopId", deleteWorkshop);
 
-router.get("/:workshopName/products", getProductsByWorkshop);
+router.get("/:workshopId", getProductsByWorkshop);
 
 export default router;

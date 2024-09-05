@@ -1,66 +1,68 @@
 import { Favorite } from "../models/favoriteModel.js";
-import catchAsync from "../handleErrors/catchAsync.js"
-import AppError from "../handleErrors/appError.js"
+import catchAsync from "../handleErrors/catchAsync.js";
+import AppError from "../handleErrors/appError.js";
 //get all Rating
-const getAllFavorites=catchAsync(async(req, res) => {
-    const favorites=await Favorite.find({user:req.user.id})
-   
-    res.status(200).json({
-        msg:"success",
-        length:favorites.length,
-        data:{favorites}})
-    })
+const getAllFavorites = catchAsync(async (req, res) => {
+  const favorites = await Favorite.find({ user: req.user.id }).populate(
+    "product"
+  );
 
+  res.status(200).json({
+    msg: "success",
+    length: favorites.length,
+    data: { favorites },
+  });
+});
 
-
-
-
-
- 
 const createOneFavorite = catchAsync(async (req, res, next) => {
   const productId = req.params.productId;
   req.body.product = req.body.product || productId;
   req.body.user = req.body.user || req.user.id;
   if (!req.body.product) {
-      return next(new AppError("Product ID is required", 400));
+    return next(new AppError("Product ID is required", 400));
   }
 
-  const existingFavorite = await Favorite.findOne({ user: req.user.id, product: req.body.product });
+  const existingFavorite = await Favorite.findOne({
+    user: req.user.id,
+    product: req.body.product,
+  });
   if (existingFavorite) {
-      return next(new AppError("Product is already in your wishlist", 400));
+    return next(new AppError("Product is already in your wishlist", 400));
   }
   const newFavorite = await Favorite.create({
-      user: req.user.id,
-      product: req.body.product,
-      is_favorite: true
+    user: req.user.id,
+    product: req.body.product,
+    is_favorite: true,
   });
 
   res.status(200).json({
-      msg: "success",
-      data: { newFavorite }
+    msg: "success",
+    data: { newFavorite },
   });
 });
- 
+
 const deleteOneFavorite = catchAsync(async (req, res, next) => {
   const productId = req.params.productId;
   req.body.product = req.body.product || productId;
   req.body.user = req.body.user || req.user.id;
   if (!req.body.product) {
-      return next(new AppError("Product ID is required", 400));
+    return next(new AppError("Product ID is required", 400));
   }
 
-  const existingFavorite = await Favorite.findOne({ user: req.user.id, product: req.body.product });
+  const existingFavorite = await Favorite.findOne({
+    user: req.user.id,
+    product: req.body.product,
+  });
   if (!existingFavorite) {
-      return next(new AppError("Product is not in your wishlist", 400));
+    return next(new AppError("Product is not in your wishlist", 400));
   }
   await Favorite.deleteOne({ user: req.user.id, product: productId });
   res.status(200).json({
-      msg: "success",
-      
+    msg: "success",
   });
 });
- export {getAllFavorites,createOneFavorite,deleteOneFavorite}  
- /**
+export { getAllFavorites, createOneFavorite, deleteOneFavorite };
+/**
   * exports.getAllOffers = catchAsync(async (req, res,next) => { 
   //no need to populate in this function cause will noe use them 
   const offers = await Offer.find();
@@ -112,4 +114,3 @@ await orderFound.save();
        data: offer }) 
   }); 
   */
- 

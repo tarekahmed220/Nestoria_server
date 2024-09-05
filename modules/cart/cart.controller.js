@@ -4,9 +4,8 @@ import { Product } from "../../models/productModel.js";
 
 
 const addToCart = catchAsync(async function (req, res) {
-  const { productId, quantity } = req.body;
+  const { productId, quantity, color } = req.body;
   const userId = req.user.id;
-  console.log("pro" , productId )
 
   if (isNaN(quantity) || quantity <= 0) {
     return res.status(400).json({ message: "Invalid quantity" });
@@ -16,9 +15,9 @@ const addToCart = catchAsync(async function (req, res) {
   if (!product) {
     return res.status(404).json({ message: "Product not found" });
   }
-  const cartItem = await cartModel.findOne({ userId, productId });
+  const cartItem = await cartModel.findOne({ userId, productId, color });
   if (!cartItem) {
-    const newCartItem = new cartModel({ userId, productId, quantity });
+    const newCartItem = new cartModel({ userId, productId, quantity, color });
     await newCartItem.save();
 
     return res.json({ id: newCartItem._id });
@@ -29,7 +28,6 @@ const addToCart = catchAsync(async function (req, res) {
 
 const getCartCount = catchAsync(async function (req, res) {
   const userId = req.user.id;
-  console.log(userId);
   const cartItems = await cartModel.find({ userId });
   const cartCount = cartItems.reduce((total, item) => total + item.quantity, 0);
   res.json(cartCount);
@@ -37,7 +35,6 @@ const getCartCount = catchAsync(async function (req, res) {
 
 const removeFromCart = catchAsync(async function (req, res) {
   let productId = req.params.productId;
-  console.log(productId);
   let userId = req.user.id;
   let product = await Product.findById(productId);
   if (!product) return res.status(404).json({ message: "Product not found" });
@@ -48,13 +45,18 @@ const removeFromCart = catchAsync(async function (req, res) {
 const updateCart = catchAsync(async function (req, res) {
   let quantity = req.body.quantity;
   let productId = req.body.productId;
+  let color = req.body.color;
   let userId = req.user.id;
-  let cart = await cartModel.findOne({ productId: productId, userId: userId });
+  console.log(quantity,productId,userId,color);
+  let cart = await cartModel.findOne({ productId: productId, userId: userId, color: color });
   if (cart) {
     cart.quantity = quantity;
     await cart.save();
-    res.json({ cart });
-  } else {
+    res.json({ cart });    
+  }else if(!color){
+    return res.json({ message: "Enter color" });
+
+  }else {
     return res.status(404).json({ message: "Cart item not found" });
   }
 });

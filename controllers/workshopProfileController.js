@@ -1,27 +1,39 @@
+import mongoose from "mongoose";
 import AppError from "../handleErrors/appError.js";
 import catchAsync from "../handleErrors/catchAsync.js";
 import { Product } from "../models/productModel.js";
 import Workshop from "../models/workshopModel.js";
 
 const getProductsByWorkshop = catchAsync(async (req, res, next) => {
-  const { workshopName } = req.params;
+  const { workshopId } = req.params;
   const { page = 1, limit = 10 } = req.query;
 
-  const skip = (page - 1) * limit;
+  console.log("Received workshopId:", workshopId);
 
-  const workshop = await Workshop.findOne({ name: workshopName });
+  const skip = (page - 1) * Number(limit);
+
+  if (!mongoose.Types.ObjectId.isValid(workshopId)) {
+    return next(new AppError("Invalid workshop ID", 400));
+  }
+
+  const workshop = await Workshop.findById(workshopId);
+  console.log("workshop", workshop);
 
   if (!workshop) {
     return next(new AppError("Workshop not found", 404));
   }
 
-  const products = await Product.find({ workshop: workshop._id })
+  const products = await Product.find({
+    workshop_id: new mongoose.Types.ObjectId(workshopId),
+  })
     .skip(skip)
     .limit(Number(limit))
     .exec();
 
+  console.log(products);
+
   const totalProducts = await Product.countDocuments({
-    workshop: workshop._id,
+    workshop_id: new mongoose.Types.ObjectId(workshopId),
   });
 
   if (!products || products.length === 0) {

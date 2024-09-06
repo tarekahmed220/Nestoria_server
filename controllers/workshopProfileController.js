@@ -19,13 +19,14 @@ const getProductsByWorkshop = catchAsync(async (req, res, next) => {
   const workshop = await Workshop.findById(workshopId);
   console.log("workshop", workshop);
 
-  if (!workshop) {
+  if (!Workshop) {
     return next(new AppError("Workshop not found", 404));
   }
 
   const products = await Product.find({
     workshop_id: new mongoose.Types.ObjectId(workshopId),
   })
+    // .populate("Workshop")
     .skip(skip)
     .limit(Number(limit))
     .exec();

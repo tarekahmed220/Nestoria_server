@@ -38,25 +38,53 @@ const create1 = catchAsync(async (req, res) => {
   });
 });
 
-//get product by id
 const getAllProducts = catchAsync(async (req, res, next) => {
-  const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 10;
+  const {
+    category,
+    keyword,
+    minPrice,
+    maxPrice,
+    page = 1,
+    limit = 10,
+  } = req.query;
 
-  const startIndex = (page - 1) * limit;
-  const total = await Product.countDocuments();
+  const condition = {};
 
-  const products = await Product.find()
+  if (category) {
+    condition.category = category;
+  }
+
+  if (keyword) {
+    condition.name = { $regex: ".*" + keyword + ".*", $options: "i" };
+  }
+
+  if (minPrice || maxPrice) {
+    condition.price = {};
+    if (minPrice) {
+      condition.price.$gte = parseFloat(minPrice);
+    }
+    if (maxPrice) {
+      condition.price.$lte = parseFloat(maxPrice);
+    }
+  }
+
+  const offset = (page - 1) * limit;
+
+  const total = await Product.countDocuments(condition);
+
+  const products = await Product.find(condition)
     .sort({ createdAt: -1 })
-    .skip(startIndex)
+    .populate("workshop_id")
+    .skip(offset)
     .limit(limit);
 
   res.status(200).json({
+    status: "success",
     page,
     limit,
     total,
     pages: Math.ceil(total / limit),
-    data: products,
+    products,
   });
 });
 

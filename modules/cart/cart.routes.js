@@ -15,6 +15,6 @@ cartRoutes.get("/getCartPrducts", verifyToken, getCartItems);
 cartRoutes.post("/addToCart", verifyToken, addToCart);
 cartRoutes.get("/cartCount", verifyToken, getCartCount);
 cartRoutes.put("/updateCart", verifyToken, updateCart);
-cartRoutes.delete("/removeFromCart/:productId", verifyToken, removeFromCart);
+cartRoutes.delete("/removeFromCart/:productCartId", verifyToken, removeFromCart);
 
 export default cartRoutes;

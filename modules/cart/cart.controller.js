@@ -34,12 +34,16 @@ const getCartCount = catchAsync(async function (req, res) {
 });
 
 const removeFromCart = catchAsync(async function (req, res) {
-  let productId = req.params.productId;
+  // let productId = req.params.productId;
+  let _id = req.params.productCartId;
   let userId = req.user.id;
-  let product = await Product.findById(productId);
+  let product = await cartModel.findOne({_id: _id, userId: userId});
+
   if (!product) return res.status(404).json({ message: "Product not found" });
-  await cartModel.findOneAndDelete({ userId, productId });
-  res.json({ message: "success" });
+  if(userId && _id){
+    await cartModel.findOneAndDelete({ userId, _id });
+    res.json({ message: "success" });
+  }
 });
 
 const updateCart = catchAsync(async function (req, res) {
@@ -47,7 +51,6 @@ const updateCart = catchAsync(async function (req, res) {
   let productId = req.body.productId;
   let color = req.body.color;
   let userId = req.user.id;
-  console.log(quantity,productId,userId,color);
   let cart = await cartModel.findOne({ productId: productId, userId: userId, color: color });
   if (cart) {
     cart.quantity = quantity;

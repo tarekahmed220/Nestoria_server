@@ -1,5 +1,5 @@
 import mongoose, { Schema, model } from "mongoose";
-import validator from "validator";
+
 const productSchema = new Schema(
   {
     productName: {
@@ -13,7 +13,7 @@ const productSchema = new Schema(
       type: Number,
       min: 1,
       max: 1000000000000,
-      required: [true, "please inter price"],
+      required: [true, "Please enter price"],
     },
     description: {
       type: String,
@@ -22,7 +22,6 @@ const productSchema = new Schema(
     },
     photo: {
       type: String,
-
       default: "",
     },
     category: {
@@ -49,13 +48,17 @@ const productSchema = new Schema(
       default: 0,
       min: 0,
       max: 5,
-      set: (value) => Math.round(value * 10) / 10, //4.6666 46.666  4.7
+      set: (value) => Math.round(value * 10) / 10, // 4.6666 => 4.7
     },
     ratingQuantity: {
       type: Number,
       default: 0,
     },
-
+    workshop_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Workshop",
+      required: true,
+    },
     __v: {
       type: Number,
       select: false,
@@ -68,21 +71,16 @@ const productSchema = new Schema(
   }
 );
 
-//virtual populate
-//when get one product will see array of ratings there
+// Virtual populate
 productSchema.virtual("ratings", {
   ref: "Rating",
-  foreignField: "Product", //from rating model
+  foreignField: "Product",
   localField: "_id",
 });
+
 productSchema.virtual("favorites", {
   ref: "Favorite",
-  foreignField: "Product", //from favorite model
-  localField: "_id",
-});
-productSchema.virtual("ratings", {
-  ref: "Rating",
-  foreignField: "Product", //from rating model
+  foreignField: "Product",
   localField: "_id",
 });
 

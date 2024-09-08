@@ -19,6 +19,7 @@ import path from "path";
 import cartRoutes from "./modules/cart/cart.routes.js";
 import couponRoutes from "./modules/coupon/coupon.routes.js";
 import profileRoutes from "./modules/profile/profile.routes.js";
+import ordersRoutes from "./modules/checkout/checkout.routes.js";
 
 const __dirname = path.resolve();
 const app = express();
@@ -65,6 +66,8 @@ app.use("/api/v1/fur/workshops", workshopRoutes);
 app.use(cartRoutes);
 app.use(couponRoutes);
 app.use("/api/v1/fur/", profileRoutes);
+app.use("/api/v1/fur/orders/",ordersRoutes);
+
 
 app.all("*", (req, res, next) => {
   return next(

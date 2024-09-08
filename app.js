@@ -4,13 +4,14 @@ import {dbConnect}  from './dbConnect.js'
 import { Product } from './models/productModel.js';
 import AppError from './handleErrors/appError.js';
 import globalErrorHandler from './handleErrors/globalError.js';
-
+import mongoose from 'mongoose';//{ MongoClient } from "mongodb";
  import cors from 'cors'
 import userRoutes from './routes/userRoutes.js'
  import authRoutes from './routes/authRoutes.js'
  import ratingRoutes from './routes/ratingRoutes.js'
 import productRoutes from './routes/productRoutes.js'
 import favoriteRoutes from './routes/favoriteRoutes.js'
+import {app,server} from './socket/index.js'
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 
@@ -21,7 +22,7 @@ import { dirname } from 'path';
 
 
 const __dirname = path.resolve();
-const app = express();
+// const app = express();
 
 
 
@@ -30,7 +31,6 @@ app.use(express.json());
 
 // app.use(express.static(__dirname + "../uploads"));//work with react//
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
 
 
 dbConnect()
@@ -58,4 +58,14 @@ app.use((req,res,next)=>{
 //exports.ErrorRequestHandler if next function is error
 app.use(globalErrorHandler)
 
+// 
+// import express from 'express'
+// import app from './app.js'
+
+//const port = 5000 //process.env.PORT || 5000
+
+// app.listen(port, () => console.log(`Example app listening on port ${port}!`))
+server.listen(5000, () => {
+  console.log("Server is listening on port 5000");
+});
 export default app;

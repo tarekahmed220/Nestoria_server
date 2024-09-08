@@ -15,9 +15,34 @@ const getOneUser=catchAsync(async(req, res) => {
       }
           res.status(200).json({msg:"success",user})
     })
-      
-    
+const getMyProfile=catchAsync(async(req, res) => {
+    let userId=req.user.id      
+    let user=await User.findById(userId)//.populate('myCart')
+    res.status(200).json({msg:"success",user})
+  })
+  const searchbyEmailOrName = catchAsync(async (req, res) => {
+    const { fullName } = req.body;
+  
+    if (!fullName) {
+      return res.status(400).json({ msg: "Search term is required" });
+    }
+    // const query = new RegExp(`^${search}`, 'i'); 
+ 
+    // Find users by email or name, excluding the password field
+    const users = await User.find({
+      fullName:{
+      $regex:`^${fullName}`, $options:'i' 
+  }}).select('-password');
+  
+    if (!users || users.length === 0) {
+      return res.status(404).json({ msg: "No users found" });
+    }
+    res.status(200).json({ msg: "Success", users });
+  });
+  
     export {
         getUsers,
-        getOneUser
+        getOneUser,
+        getMyProfile,
+        searchbyEmailOrName
     }

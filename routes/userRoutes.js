@@ -6,13 +6,15 @@ import  verifyAccount  from "../middlewares/vieifyAccount.js";
 import {AddProductToCart,removeProductFromCart,getCart} from "../controllers/cartController.js"
 import {
     getUsers,
-    getOneUser
-  
+    getOneUser,
+    getMyProfile,
+    searchbyEmailOrName
     //  verifyAccount
     } from "../controllers/userController.js"
 const router=express.Router()
 //  router.get('/', roleCheck('admin'),getUsers); 
  router.get('/cart',verifyToken,getCart)
+ router.post('/search',searchbyEmailOrName)
  router.get('/:id', getOneUser); 
 
  router.route('/:productId/ratings')
@@ -22,8 +24,7 @@ const router=express.Router()
 router.patch('/remove/:id',verifyToken
         ,removeProductFromCart)   
 
-
-
+router.get('/myprofile',verifyToken,getMyProfile)
 
 router.get('/verify/:token', verifyAccount)
 export default router;

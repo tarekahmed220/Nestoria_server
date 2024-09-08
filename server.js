@@ -1,9 +1,11 @@
-import express from 'express'
-import app from './app.js'
 
-const port = 5000 //process.env.PORT || 5000
+// import app from './app.js'
 
-app.listen(port, () => console.log(`Example app listening on port ${port}!`))
+
+// const port = 5000 //process.env.PORT || 5000
+
+// app.listen(port, () => console.log(`Example app listening on port ${port}!`))
 /**
-  nodemon server.js
+  nodemon app.js
  */
+

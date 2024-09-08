@@ -12,4 +12,15 @@ const getOneUser = catchAsync(async (req, res) => {
   res.status(200).json({ msg: "success", user });
 });
 
-export { getOneUser };
+const modifyLoginStatus = catchAsync(async (req, res) => {
+  let userId = req.user.id;
+  let user = await User.findById(userId);
+  if (!user) {
+    return next(new AppError("not found user", 401));
+  }
+  user.isLoggedin = false;
+  console.log(user.isLoggedin);
+  res.status(200).json({ msg: "success", user });
+});
+
+export { getOneUser, modifyLoginStatus };

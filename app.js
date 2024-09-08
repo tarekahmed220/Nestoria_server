@@ -18,6 +18,7 @@ import { dirname } from "path";
 import path from "path";
 import cartRoutes from "./modules/cart/cart.routes.js";
 import couponRoutes from "./modules/coupon/coupon.routes.js";
+import profileRoutes from "./modules/profile/profile.routes.js";
 
 const __dirname = path.resolve();
 const app = express();
@@ -63,6 +64,7 @@ app.use("/api/v1/fur/products", productRoutes);
 app.use("/api/v1/fur/workshops", workshopRoutes);
 app.use(cartRoutes);
 app.use(couponRoutes);
+app.use("/api/v1/fur/", profileRoutes);
 
 app.all("*", (req, res, next) => {
   return next(

@@ -19,6 +19,10 @@ const cartSchema = new Schema({
     type: String,
     required: true
   },
+  status:{
+    type: String,
+    default: "",
+  }
 });
 
 export default model("cart", cartSchema);

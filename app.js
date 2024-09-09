@@ -20,6 +20,7 @@ import cartRoutes from "./modules/cart/cart.routes.js";
 import couponRoutes from "./modules/coupon/coupon.routes.js";
 import profileRoutes from "./modules/profile/profile.routes.js";
 import ordersRoutes from "./modules/checkout/checkout.routes.js";
+import passwordRoutes from "./modules/changePassword/password.routes.js";
 
 const __dirname = path.resolve();
 const app = express();
@@ -67,6 +68,7 @@ app.use(cartRoutes);
 app.use(couponRoutes);
 app.use("/api/v1/fur/", profileRoutes);
 app.use("/api/v1/fur/orders/",ordersRoutes);
+app.use("/api/v1/fur/password/", passwordRoutes);
 
 
 app.all("*", (req, res, next) => {

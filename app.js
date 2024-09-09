@@ -19,8 +19,10 @@ import path from "path";
 import cartRoutes from "./modules/cart/cart.routes.js";
 import couponRoutes from "./modules/coupon/coupon.routes.js";
 import profileRoutes from "./modules/profile/profile.routes.js";
+import paymentRoutes from "./modules/payment/payment.routes.js";
 import ordersRoutes from "./modules/checkout/checkout.routes.js";
 import passwordRoutes from "./modules/changePassword/password.routes.js";
+
 
 const __dirname = path.resolve();
 const app = express();
@@ -52,11 +54,13 @@ dbConnect();
 
 //test middleware
 
-
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
   next();
 });
+
+//payment
+app.use("/api/payment", paymentRoutes);
 
 app.use("/api/v1/fur/auth", authRoutes);
 app.use("/api/v1/fur/users", userRoutes);

@@ -14,7 +14,8 @@ import {
     getOneProduct,
     updateProduct,
     uploadPhotos,
-    createProduct
+    createProduct,
+    getWorkshopProducts
   } from "../controllers/productController.js"
   import {
 
@@ -29,6 +30,7 @@ router.post('/', verifyToken,roleCheck('workshop'),uploadPhotos, createProduct);
 // router.route("/cloud").post(verifyToken, upload.single("photo"), create1);
 // router.route('/').post(upload.single('photo'), createOneProduct)
 router.route("/").get(getAllProducts);
+router.route("/myproducts").get(verifyToken,getWorkshopProducts);
 router.route("/homeproducts").get(getHomeProducts);
 
 router

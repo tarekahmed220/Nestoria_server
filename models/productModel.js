@@ -46,6 +46,10 @@ const productSchema = new Schema(
       min: 0,
       max: 100000000000000,
     },
+    color:{
+      type: String,
+      
+    },
     ratingsAvg: {
       type: Number,
       default: 0,

@@ -143,7 +143,13 @@ const getHomeProducts = catchAsync(async (req, res, next) => {
 
   res.status(200).json([{ msg: "success" }, { homeProducts }]);
 });
-
+const getWorkshopProducts = catchAsync(async (req, res, next) => {
+  if (!req.body.user) req.body.user = req.user.id;
+  const workshopProducts = await Product.find(
+    { user: req.body.user }
+  ).sort({ createdAt: -1 });
+  res.status(200).json({ msg: "success" ,  workshopProducts });
+})
 export {
   getAllProducts,
   getOneProduct,
@@ -151,6 +157,6 @@ export {
   updateProduct,
   createProduct,
   uploadPhotos,
-
+  getWorkshopProducts,
   getHomeProducts,
 };

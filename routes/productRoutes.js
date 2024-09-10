@@ -13,7 +13,8 @@ import {
     deleteProduct,
     getOneProduct,
     updateProduct,
-    create1
+    uploadPhotos,
+    createProduct
   } from "../controllers/productController.js"
   import {
 
@@ -23,14 +24,16 @@ import {
 import { createOneRate } from "../controllers/ratingController.js";
 const router = express.Router();
 
-router.route("/cloud").post(verifyToken, upload.single("photo"), create1);
+router.post('/', verifyToken,roleCheck('workshop'),uploadPhotos, createProduct);
+
+// router.route("/cloud").post(verifyToken, upload.single("photo"), create1);
 // router.route('/').post(upload.single('photo'), createOneProduct)
 router.route("/").get(getAllProducts);
 router.route("/homeproducts").get(getHomeProducts);
 
 router
   .route("/:id")
-  .delete(deleteProduct)
+  .delete(verifyToken,deleteProduct)
   .get(getOneProduct)
   .patch(upload.single("photo"), updateProduct);
 

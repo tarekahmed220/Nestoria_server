@@ -52,6 +52,7 @@ app.use((req, res, next) => {
   next();
 });
 
+
 //payment
 app.use("/api/payment", paymentRoutes);
 
@@ -74,19 +75,14 @@ app.all("*", (req, res, next) => {
   ); //update here by return//class AppError extends Error
 });
 
+
  app.all('*', (req, res, next) => {
     return next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));//update here by return//class AppError extends Error
   });
 //exports.ErrorRequestHandler if next function is error
 app.use(globalErrorHandler)
 
-// 
-// import express from 'express'
-// import app from './app.js'
 
-//const port = 5000 //process.env.PORT || 5000
-
-// app.listen(port, () => console.log(`Example app listening on port ${port}!`))
 server.listen(5000, () => {
   console.log("Server is listening on port 5000");
 });

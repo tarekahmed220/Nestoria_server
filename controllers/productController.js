@@ -6,7 +6,7 @@ import { deleteOne } from "./factory.js";
 import { cloudinary } from "../uploads/cloudinary.js";
 import { HomeProductsModel } from "../models/homeProductModel.js";
 import plimit from "p-limit";
-const uploadPhotos = upload.array('photos', 2);
+const uploadPhotos = upload.array('images', 2);
 
 // Cloudinary and product creation logic
 const createProduct = catchAsync(async (req, res, next) => {
@@ -23,7 +23,7 @@ const createProduct = catchAsync(async (req, res, next) => {
   );
   const imagesLinks = await Promise.all(uploadPromises);
 
-  const photos = imagesLinks.map((result) => ({
+  const images = imagesLinks.map((result) => ({
     secure_url: result.secure_url,
     public_id: result.public_id,
   }));
@@ -32,16 +32,16 @@ const createProduct = catchAsync(async (req, res, next) => {
   if (!req.body.user) req.body.user = req.user.id;
 
   // Destructure product details from the request body
-  const { productName, price, description, category } = req.body;
+  const { name, price, description, category } = req.body;
 
   // Create product with uploaded images
   const product = await Product.create({
-    productName,
+    name,
     price,
     category,
     description,
-    photos: photos.map(photo => photo.secure_url),
-    cloudinary_ids: photos.map(photo => photo.public_id),
+    images: images.map(image => image.secure_url),
+    cloudinary_ids: images.map(image => image.public_id),
     user: req.user.id,
   });
   res.status(201).json({

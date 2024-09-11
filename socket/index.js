@@ -8,7 +8,7 @@ import { Conversation } from "../models/conversationModel.js";
 import { getRandomValues } from "crypto";
 import getUserByToken from "../utilits/getUserByToken.js";
 import getupdatedConversation  from "../utilits/getupdatedConversation.js";
-import { getAllMyConversations } from "../controllers/conversation.js";
+import { getConversation } from "../controllers/conversation.js";
 import { console } from "inspector";
 const app = express();
 const server = http.createServer(app);
@@ -44,16 +44,7 @@ socket.join(user.id.toString())
 onlineUsers.add(user.id.toString())
 //send online users
 io.emit("onlineUser", Array.from(onlineUsers));
-//
-// socket.on("connect_error", (err) => {
-//     // the reason of the error, for example "xhr poll error"
-//     console.log(err.message);
-  
-//     // some additional description, for example the status code of the initial HTTP response
-//     console.log(err.description);
-//     // some additional context, for example the XMLHttpRequest object
-//     console.log(err.context);
-//   });
+
 socket.on("messagePage",async (userId) => {
    
     try{
@@ -69,16 +60,22 @@ socket.on("messagePage",async (userId) => {
             photo:userDetails?.photo,
             email:userDetails?.email,
             online:onlineUsers?.has(userId),
+            messages:await getupdatedConversation(userId),
+            role:userDetails?.role,
+            unseenMsg:0,
+
+
+
          
         }
         // console.log(data)
 socket.emit("messageUser",data)
-    const getAllMyConversations=await Conversation.findOne({
+    const getConversation=await Conversation.findOne({
     $or:[
         { sender: user?._id, receiver: userId },
         { sender: userId, receiver: user?._id },
         ]}).populate('messages').sort({updatedAt:-1})
-socket.emit("allMyConversations",getAllMyConversations?.messages||[])
+socket.emit("allMyConversations",getConversation?.messages||[])
       } catch (error) {
         console.error("Error in messagePage event:", error);
       }  });
@@ -89,8 +86,7 @@ socket.on("newMessage", async (data) => {
         $or:[
             { sender: data?.sender, receiver: data?.receiver, },
             { sender: data?.receiver, receiver: data?.sender, },
-            ]})
-            //.populate('messages').sort({createdAt:-1})
+            ]}).populate('messages').sort({createdAt:-1})
     //     sender: data?.sender,
     //     receiver: data?.receiver,
     // }) 
@@ -139,37 +135,37 @@ io.to(data?.receiver).emit(
 
 // }
 //send conversation to frontend
-const senderConv=await getAllMyConversations(data?.sender)
-const receiverConv=await getAllMyConversations(data?.receiver)
+const senderConv=await getConversation(data?.sender)
+const receiverConv=await getConversation(data?.receiver)
 io.to(data?.sender).emit("conversation",senderConv)
 io.to(data?.receiver).emit("conversation",receiverConv)
 
 })
 socket.on("sidebar", async(userId) => {
        console.log(userId)
-        const conversation=await getAllMyConversations(userId)
+        const conversation=await getConversation(userId)
    socket.emit("conversation",conversation)
  })
     
-socket.on("seen",async (user) => {    
+socket.on("seen",async (msgByUser) => {    
     // try{   
        let conversation=await Conversation.findOne({
         $or:[
-            {sender:user?._id,receiver:user},
-            {sender:user,receiver:user?._id}
+            {sender:user?._id,receiver:msgByUser},
+            {sender:msgByUser,receiver:user?._id}
         ]})//.populate('messages')
       const  convMessagesId=conversation?.messages||[]
         await Message?.updateMany({
             _id:{$in:convMessagesId},
-            user,
+            msgByUser:msgByUser,
     },{
         $set:{ seen:true}
     })
     //send conversation to frontend
-const senderConv=await getAllMyConversations(user?._id.toString())
-const receiverConv=await getAllMyConversations(user)
-io.to(user?._id.toString()).emit("conversation",senderConv)
-io.to(user).emit("conversation",receiverConv)
+const senderConv=await getConversation(user?._id.toString())
+const receiverConv=await getConversation(msgByUser)
+io.to(user?._id).emit("conversation",senderConv)
+io.to(msgByUser).emit("conversation",receiverConv)
 // }catch(err){console.log(err)}
      
  })

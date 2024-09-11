@@ -1,5 +1,7 @@
+
 import "dotenv/config";
 import express from "express";
+import {app,server} from './socket/index.js'
 import { dbConnect } from "./dbConnect.js";
 import { Product } from "./models/productModel.js";
 import AppError from "./handleErrors/appError.js";
@@ -25,34 +27,25 @@ import updateAccount from "./modules/updateAccount/account.routes.js";
 
 
 const __dirname = path.resolve();
-const app = express();
+// const app = express();
 
-const allowedOrigins = [
-  "http://localhost:3000",
-  "https://nestoria-user-front.vercel.app",
-];
 
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    credentials: true,
-  })
-);
 
+app.use(cors({origin:"http://localhost:3000",credentials:true})) 
 app.use(express.json());
 
 // app.use(express.static(__dirname + "../uploads"));//work with react//
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-dbConnect();
 
+dbConnect()
+ 
 //test middleware
+app.use((req,res,next)=>{
+    req.requestTime=new Date().toISOString()
+    next()
+})
+
 
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
@@ -81,7 +74,20 @@ app.all("*", (req, res, next) => {
   ); //update here by return//class AppError extends Error
 });
 
+ app.all('*', (req, res, next) => {
+    return next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));//update here by return//class AppError extends Error
+  });
 //exports.ErrorRequestHandler if next function is error
-app.use(globalErrorHandler);
+app.use(globalErrorHandler)
 
+// 
+// import express from 'express'
+// import app from './app.js'
+
+//const port = 5000 //process.env.PORT || 5000
+
+// app.listen(port, () => console.log(`Example app listening on port ${port}!`))
+server.listen(5000, () => {
+  console.log("Server is listening on port 5000");
+});
 export default app;

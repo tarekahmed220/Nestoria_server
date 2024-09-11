@@ -5,31 +5,45 @@ import { upload } from "../uploads/multer.js";
 import { deleteOne } from "./factory.js";
 import { cloudinary } from "../uploads/cloudinary.js";
 import { HomeProductsModel } from "../models/homeProductModel.js";
+import plimit from "p-limit";
+const uploadPhotos = upload.array('photos', 2);
 
-const create1 = catchAsync(async (req, res) => {
-  //allowed nested routes
+// Cloudinary and product creation logic
+const createProduct = catchAsync(async (req, res, next) => {
+  
+  // Ensure that only 2 files are uploaded
+  const imagesToUpload = req.files;
+  if (imagesToUpload.length > 2) {
+    return next(new AppError("You can't upload more than 2 images", 400));
+  }
 
-  if (!req.body.user) req.body.user = req.user.id; //from protect middleware
+  // Upload images to Cloudinary
+  const uploadPromises = imagesToUpload.map((file) =>
+    cloudinary.v2.uploader.upload(file.path)
+  );
+  const imagesLinks = await Promise.all(uploadPromises);
 
+  const photos = imagesLinks.map((result) => ({
+    secure_url: result.secure_url,
+    public_id: result.public_id,
+  }));
+
+  // Assign user if not present in request body
+  if (!req.body.user) req.body.user = req.user.id;
+
+  // Destructure product details from the request body
   const { productName, price, description, category } = req.body;
 
-  //Upload image to cloudinary
-
-  const result = await cloudinary.v2.uploader.upload(req.file.path);
-
-  //create order
+  // Create product with uploaded images
   const product = await Product.create({
     productName,
     price,
-
     category,
     description,
-    photo: result.secure_url,
-    cloudinary_id: result.public_id,
-
+    photos: photos.map(photo => photo.secure_url),
+    cloudinary_ids: photos.map(photo => photo.public_id),
     user: req.user.id,
   });
-
   res.status(201).json({
     status: "success",
     data: {
@@ -131,12 +145,20 @@ const getHomeProducts = catchAsync(async (req, res, next) => {
 
   res.status(200).json([{ msg: "success" }, { homeProducts }]);
 });
-
+const getWorkshopProducts = catchAsync(async (req, res, next) => {
+  if (!req.body.user) req.body.user = req.user.id;
+  const workshopProducts = await Product.find(
+    { user: req.body.user }
+  ).sort({ createdAt: -1 });
+  res.status(200).json({ msg: "success" ,  workshopProducts });
+})
 export {
   getAllProducts,
   getOneProduct,
   deleteProduct,
   updateProduct,
-  create1,
+  createProduct,
+  uploadPhotos,
+  getWorkshopProducts,
   getHomeProducts,
 };

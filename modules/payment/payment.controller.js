@@ -17,6 +17,7 @@ const handlePayment = catchAsync(async (req, res) => {
 
     res.send({
       clientSecret: paymentIntent.client_secret,
+      paymentIntentId: paymentIntent.id,
     });
   } catch (error) {
     res.status(500).json({ error: error.message });

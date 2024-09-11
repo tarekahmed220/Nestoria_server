@@ -104,7 +104,9 @@ const getAllProducts = catchAsync(async (req, res, next) => {
 
 const getOneProduct = catchAsync(async (req, res, next) => {
   const productId = req.params.id;
-  let product = await Product.findById(productId).populate("ratings");
+  let product = await Product.findById(productId)
+    .populate("ratings")
+    .populate("workshop_id");
   if (!product) {
     return next(new AppError("product not found", 404));
   }

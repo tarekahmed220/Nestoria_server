@@ -2,7 +2,6 @@ import catchAsync from "../../handleErrors/catchAsync.js";
 import cartModel from "../../models/cart.model.js";
 import { Product } from "../../models/productModel.js";
 
-
 const addToCart = catchAsync(async function (req, res) {
   const { productId, quantity, color } = req.body;
   const userId = req.user.id;
@@ -10,10 +9,15 @@ const addToCart = catchAsync(async function (req, res) {
   if (isNaN(quantity) || quantity <= 0) {
     return res.status(400).json({ message: "Invalid quantity" });
   }
-
+  if (!color) {
+    return res.json({ message: "Enter color" });
+  }
   const product = await Product.findById(productId);
   if (!product) {
     return res.status(404).json({ message: "Product not found" });
+  }
+  if (quantity > product.quantity) {
+    return res.status(400).json({ message: "This is the maximum." });
   }
   const cartItem = await cartModel.findOne({ userId, productId, color });
   if (!cartItem) {
@@ -34,12 +38,16 @@ const getCartCount = catchAsync(async function (req, res) {
 });
 
 const removeFromCart = catchAsync(async function (req, res) {
-  let productId = req.params.productId;
+  // let productId = req.params.productId;
+  let _id = req.params.productCartId;
   let userId = req.user.id;
-  let product = await Product.findById(productId);
+  let product = await cartModel.findOne({ _id: _id, userId: userId });
+
   if (!product) return res.status(404).json({ message: "Product not found" });
-  await cartModel.findOneAndDelete({ userId, productId });
-  res.json({ message: "success" });
+  if (userId && _id) {
+    await cartModel.findOneAndDelete({ userId, _id });
+    res.json({ message: "success" });
+  }
 });
 
 const updateCart = catchAsync(async function (req, res) {
@@ -47,16 +55,23 @@ const updateCart = catchAsync(async function (req, res) {
   let productId = req.body.productId;
   let color = req.body.color;
   let userId = req.user.id;
-  console.log(quantity,productId,userId,color);
-  let cart = await cartModel.findOne({ productId: productId, userId: userId, color: color });
-  if (cart) {
-    cart.quantity = quantity;
-    await cart.save();
-    res.json({ cart });    
-  }else if(!color){
+  let cart = await cartModel.findOne({
+    productId: productId,
+    userId: userId,
+    color: color,
+  });
+  let product = await Product.findById(productId);
+  if (cart) {    
+    if (quantity <= product.quantity) {
+      cart.quantity = quantity;
+      await cart.save();
+      res.json({ cart });
+    } else {
+      return res.json({ message: "This is the maximum." });
+    }
+  } else if (!color) {
     return res.json({ message: "Enter color" });
-
-  }else {
+  } else {
     return res.status(404).json({ message: "Cart item not found" });
   }
 });

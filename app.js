@@ -1,27 +1,29 @@
 
-import "dotenv/config"
-import express from'express';
-import {dbConnect}  from './dbConnect.js'
-import { Product } from './models/productModel.js';
-import AppError from './handleErrors/appError.js';
-import globalErrorHandler from './handleErrors/globalError.js';
-import mongoose from 'mongoose';//{ MongoClient } from "mongodb";
- import cors from 'cors'
-import userRoutes from './routes/userRoutes.js'
- import authRoutes from './routes/authRoutes.js'
- import ratingRoutes from './routes/ratingRoutes.js'
-import productRoutes from './routes/productRoutes.js'
-import favoriteRoutes from './routes/favoriteRoutes.js'
-
-import conversationRoute from './routes/conversationRoute.js'
+import "dotenv/config";
+import express from "express";
 import {app,server} from './socket/index.js'
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+import { dbConnect } from "./dbConnect.js";
+import { Product } from "./models/productModel.js";
+import AppError from "./handleErrors/appError.js";
+import globalErrorHandler from "./handleErrors/globalError.js";
+import cors from "cors";
+import userRoutes from "./routes/userRoutes.js";
+import authRoutes from "./routes/authRoutes.js";
+import ratingRoutes from "./routes/ratingRoutes.js";
+import productRoutes from "./routes/productRoutes.js";
+import favoriteRoutes from "./routes/favoriteRoutes.js";
+import workshopRoutes from "./routes/workshopRoutes.js";
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
+import { dirname } from "path";
 
-import { dirname } from 'path';
-
-
- import path from 'path';
+import path from "path";
+import cartRoutes from "./modules/cart/cart.routes.js";
+import couponRoutes from "./modules/coupon/coupon.routes.js";
+import profileRoutes from "./modules/profile/profile.routes.js";
+import paymentRoutes from "./modules/payment/payment.routes.js";
+import ordersRoutes from "./modules/checkout/checkout.routes.js";
+import updateAccount from "./modules/updateAccount/account.routes.js";
 
 
 const __dirname = path.resolve();
@@ -44,16 +46,34 @@ app.use((req,res,next)=>{
     next()
 })
 
-  
+
+app.use((req, res, next) => {
+  req.requestTime = new Date().toISOString();
+  next();
+});
 
 
- app.use('/api/v1/fur/auth',authRoutes);
- app.use('/api/v1/fur/users',userRoutes);
- app.use('/api/v1/fur/rates',ratingRoutes);
- app.use('/api/v1/fur/favorites', favoriteRoutes);
- app.use('/api/v1/fur/chat',conversationRoute);
+//payment
+app.use("/api/payment", paymentRoutes);
 
- app.use('/api/v1/fur/products',productRoutes);
+app.use("/api/v1/fur/auth", authRoutes);
+app.use("/api/v1/fur/users", userRoutes);
+app.use("/api/v1/fur/rates", ratingRoutes);
+app.use("/api/v1/fur/favorites", favoriteRoutes);
+app.use("/api/v1/fur/products", productRoutes);
+app.use("/api/v1/fur/workshops", workshopRoutes);
+app.use(cartRoutes);
+app.use(couponRoutes);
+app.use("/api/v1/fur/", profileRoutes);
+app.use("/api/v1/fur/orders/",ordersRoutes);
+app.use("/api/v1/fur/account/", updateAccount);
+
+
+app.all("*", (req, res, next) => {
+  return next(
+    new AppError(`Can't find ${req.originalUrl} on this server!`, 404)
+  ); //update here by return//class AppError extends Error
+});
 
 
  app.all('*', (req, res, next) => {

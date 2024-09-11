@@ -2,7 +2,7 @@ import mongoose, { Schema, model } from "mongoose";
 
 const productSchema = new Schema(
   {
-    productName: {
+    name: {
       type: String,
       required: [true, "Product name require!"],
       trim: true,
@@ -20,7 +20,7 @@ const productSchema = new Schema(
       trim: true,
       required: true,
     },
-    photos: {
+    images: {
       type: [String], 
       default: [],
     },

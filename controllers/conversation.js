@@ -1,5 +1,5 @@
 import { Conversation } from "../models/conversationModel.js";
-const getAllMyConversations= async(userId)=>{
+const getConversation= async(userId)=>{
     
 
 if(!userId) return null
@@ -9,8 +9,8 @@ if(!userId) return null
       $or: [{ sender: userId }, { receiver: userId }],
     })
       .populate("messages")
-      .populate("sender")
-      .populate("receiver")
+      .populate("sender",'fullName email')
+      .populate("receiver",'fullName email')
       .sort({ updatedAt: -1 });
 
     const conversation = userConv?.map((conv) => {
@@ -38,5 +38,13 @@ if(!userId) return null
   }
 };
 
-    
-    export {getAllMyConversations}
+const getAllConversations = async (req, res) => {
+  try { 
+    const conversations = await getConversation(req.user?._id);
+    res.status(200).json({ msg: "success", conversations });
+  } catch (error) { 
+    console.error("Error in getallConversations:", error);
+    res.status(500).json({ msg: "Internal server error" });
+  }
+}
+    export {getConversation,getAllConversations}

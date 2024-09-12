@@ -27,13 +27,26 @@ import updateAccount from "./modules/updateAccount/account.routes.js";
 import shippingAddressRoutes from "./modules/shippingAddress/shippingAddress.routes.js";
 
 
-
 const __dirname = path.resolve();
-// const app = express();
+const app = express();
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://nestoria-user-front.vercel.app",
+];
 
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  })
+);
 
-
-app.use(cors({origin:"http://localhost:3000",credentials:true})) 
 app.use(express.json());
 
 // app.use(express.static(__dirname + "../uploads"));//work with react//
@@ -65,10 +78,11 @@ app.use("/api/v1/fur/workshops", workshopRoutes);
 app.use(cartRoutes);
 app.use(couponRoutes);
 app.use("/api/v1/fur/", profileRoutes);
+
+app.use("/api/v1/fur/password/", passwordRoutes);
 app.use("/api/v1/fur/orders/",ordersRoutes);
 app.use("/api/v1/fur/account/", updateAccount);
 app.use("/api/v1/fur/shippingAddress/",shippingAddressRoutes);
-
 
 app.all("*", (req, res, next) => {
   return next(

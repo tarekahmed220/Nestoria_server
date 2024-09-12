@@ -25,24 +25,18 @@ const addToOrders = catchAsync(async function (req, res) {
     return res.json({ message: "Enter valid data" });
   }
 
-  const ordersItem = await checkoutModel.findOne({ userId });
-
-  if (!ordersItem) {
-    const newOrdersItem = new checkoutModel({
-      userId,
-      products,
-      total,
-      status,
-      paymentIntentId: paymentIntentId || "",
-    });
-    await newOrdersItem.save();
-    await cartModel.deleteMany({
-      userId: new mongoose.Types.ObjectId(userId),
-    });
-    return res.json({ id: newOrdersItem._id });
-  }
-
-  res.json({ message: "Item already in orders" });
+  const newOrdersItem = new checkoutModel({
+    userId,
+    products,
+    total,
+    status,
+    paymentIntentId: paymentIntentId || "",
+  });
+  await newOrdersItem.save();
+  await cartModel.deleteMany({
+    userId: new mongoose.Types.ObjectId(userId),
+  });
+  return res.json({ id: newOrdersItem._id });
 });
 
 export { getOrders, addToOrders };

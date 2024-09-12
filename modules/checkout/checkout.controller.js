@@ -6,7 +6,9 @@ import checkoutModel from "../../models/checkout.model.js";
 const getOrders = catchAsync(async function (req, res) {
   const userId = req.user.id;
 
-  const ordersItems = await checkoutModel.find({ userId });
+  const ordersItems = await checkoutModel.find({ userId }).populate("products.productId").populate({
+    path: "products.productId.workshop_id",
+  });
   res.json(ordersItems);
 });
 

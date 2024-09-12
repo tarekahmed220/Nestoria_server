@@ -24,6 +24,8 @@ import profileRoutes from "./modules/profile/profile.routes.js";
 import paymentRoutes from "./modules/payment/payment.routes.js";
 import ordersRoutes from "./modules/checkout/checkout.routes.js";
 import updateAccount from "./modules/updateAccount/account.routes.js";
+import shippingAddressRoutes from "./modules/shippingAddress/shippingAddress.routes.js";
+
 
 
 const __dirname = path.resolve();
@@ -46,12 +48,10 @@ app.use((req,res,next)=>{
     next()
 })
 
-
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
   next();
 });
-
 
 //payment
 app.use("/api/payment", paymentRoutes);
@@ -67,6 +67,7 @@ app.use(couponRoutes);
 app.use("/api/v1/fur/", profileRoutes);
 app.use("/api/v1/fur/orders/",ordersRoutes);
 app.use("/api/v1/fur/account/", updateAccount);
+app.use("/api/v1/fur/shippingAddress/",shippingAddressRoutes);
 
 
 app.all("*", (req, res, next) => {

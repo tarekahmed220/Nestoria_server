@@ -27,6 +27,11 @@ const checkoutSchema = new Schema(
           type: String,
           required: true,
         },
+        deliveryStatus: {
+          type: String,
+          enum: ["Processing", "Shipped", "Delivered"],
+          default: "Processing",
+        },
       },
     ],
     total: {

@@ -33,7 +33,7 @@
     "socket.io": "^4.7.5",
 
     "stripe": "^16.10.0",
-
+    
     "validation": "^0.0.1",
     "validator": "^13.12.0"
   }

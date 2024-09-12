@@ -2,7 +2,7 @@ import mongoose, { Schema, model } from "mongoose";
 
 const productSchema = new Schema(
   {
-    productName: {
+    name: {
       type: String,
       required: [true, "Product name require!"],
       trim: true,
@@ -20,15 +20,18 @@ const productSchema = new Schema(
       trim: true,
       required: true,
     },
-    photo: {
-      type: String,
-      default: "",
+    images: {
+      type: [String], 
+      default: [],
     },
     category: {
       type: String,
       required: true,
     },
-    cloudinary_id: { type: String },
+    cloudinary_ids: {
+      type: [String], 
+      default: [],
+    },
     status: {
       type: String,
       enum: ["created", "pending", "selled"],
@@ -43,6 +46,10 @@ const productSchema = new Schema(
       min: 0,
       max: 100000000000000,
     },
+    color:{
+      type: String,
+      
+    },
     ratingsAvg: {
       type: Number,
       default: 0,
@@ -54,9 +61,9 @@ const productSchema = new Schema(
       type: Number,
       default: 0,
     },
-    workshop_id: {
+    user: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Workshop",
+      ref: "User",
       required: true,
     },
     __v: {

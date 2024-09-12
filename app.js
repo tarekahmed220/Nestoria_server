@@ -28,7 +28,7 @@ import shippingAddressRoutes from "./modules/shippingAddress/shippingAddress.rou
 
 
 const __dirname = path.resolve();
-const app = express();
+
 const allowedOrigins = [
   "http://localhost:3000",
   "https://nestoria-user-front.vercel.app",
@@ -79,7 +79,7 @@ app.use(cartRoutes);
 app.use(couponRoutes);
 app.use("/api/v1/fur/", profileRoutes);
 
-app.use("/api/v1/fur/password/", passwordRoutes);
+// app.use("/api/v1/fur/password/", passwordRoutes);
 app.use("/api/v1/fur/orders/",ordersRoutes);
 app.use("/api/v1/fur/account/", updateAccount);
 app.use("/api/v1/fur/shippingAddress/",shippingAddressRoutes);

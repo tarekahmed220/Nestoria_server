@@ -46,13 +46,11 @@ const userSchema=new Schema({
         // },
         // Message:"passwordes are not the same"
       },
-    // gender:{   
-    //      type: String,
-    //     enum: ['male', 'female'],
-    
-    //     required: [true, 'Please tell us your gender'],
-    //     trim:true,}
-    //     ,
+    photo:{   
+         type: String,
+         default:"",
+        }
+        ,
     phone:{
         type:String,
         minlength:9,

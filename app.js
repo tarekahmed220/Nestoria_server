@@ -33,6 +33,7 @@ const __dirname = path.resolve();
 
 const allowedOrigins = [
   "http://localhost:3000",
+  "http://localhost:4200",
   "https://nestoria-user-front.vercel.app",
 ];
 

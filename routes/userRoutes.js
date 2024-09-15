@@ -33,12 +33,14 @@ import {
     getOneUser,
     getMyProfile,
     searchbyName
-    //  verifyAccount
+    
     } from "../controllers/userController.js"
+import getUserByToken from "../utilits/getUserByToken.js"  
 const router=express.Router()
 //  router.get('/', roleCheck('admin'),getUsers); 
  router.get('/cart',verifyToken,getCart)
  router.post('/search',verifyToken,searchbyName)
+ router.get('/myprofile',verifyToken,getMyProfile)
  router.get('/:id', getOneUser); 
 
  router.route('/:productId/ratings')
@@ -47,7 +49,7 @@ const router=express.Router()
     ,AddProductToCart)
 router.patch('/remove/:id',verifyToken
         ,removeProductFromCart)   
-router.get('/myprofile',verifyToken,getMyProfile)
+// router.get('/myprofile',verifyToken,getUserByToken)
 
 router.get('/verify/:token', verifyAccount)
 export default router;

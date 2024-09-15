@@ -6,20 +6,14 @@ import { Product } from "../models/productModel.js";
 import { upload } from "../uploads/multer.js";
 import path from "path";
 import {
-
-    
-    getAllProducts,
-    getHomeProducts,
-    deleteProduct,
-    getOneProduct,
-    updateProduct,
-    create1
-  } from "../controllers/productController.js"
-  import {
-
-    
-    createOneFavorite,
-  } from "../controllers/favoriteController.js"
+  getAllProducts,
+  getHomeProducts,
+  deleteProduct,
+  getOneProduct,
+  updateProduct,
+  create1,
+} from "../controllers/productController.js";
+import { createOneFavorite } from "../controllers/favoriteController.js";
 import { createOneRate } from "../controllers/ratingController.js";
 const router = express.Router();
 
@@ -36,16 +30,10 @@ router
 
 router
 
-.route('/:productId/ratings')
-.post(
-    verifyToken,
-    roleCheck('client'),
-    createOneRate)
+  .route("/:productId/ratings")
+  .post(verifyToken, roleCheck("client"), createOneRate);
 router
-.route('/:productId/favorites')
-.patch(
-    verifyToken,
-    roleCheck('client'),
-    createOneFavorite)
+  .route("/:productId/favorites")
+  .patch(verifyToken, roleCheck("client"), createOneFavorite);
 export default router;
 //products/:productId/rating

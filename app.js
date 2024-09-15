@@ -22,12 +22,15 @@ import profileRoutes from "./modules/profile/profile.routes.js";
 import paymentRoutes from "./modules/payment/payment.routes.js";
 import ordersRoutes from "./modules/checkout/checkout.routes.js";
 import passwordRoutes from "./modules/changePassword/password.routes.js";
+import adminRoutes from "./modules/admin/admin.routes.js";
 
 const __dirname = path.resolve();
 const app = express();
 
 const allowedOrigins = [
   "http://localhost:3000",
+  "http://localhost:4200",
+  "https://nestoria-workshop-front.vercel.app/",
   "https://nestoria-user-front.vercel.app",
 ];
 
@@ -71,6 +74,7 @@ app.use(couponRoutes);
 app.use("/api/v1/fur/", profileRoutes);
 app.use("/api/v1/fur/orders/", ordersRoutes);
 app.use("/api/v1/fur/password/", passwordRoutes);
+app.use("/api/v1/admin", adminRoutes);
 
 app.all("*", (req, res, next) => {
   return next(

@@ -30,6 +30,7 @@ router.post('/', verifyToken,roleCheck('workshop'),uploadPhotos, createProduct);
 // router.route("/cloud").post(verifyToken, upload.single("photo"), create1);
 // router.route('/').post(upload.single('photo'), createOneProduct)
 router.route("/").get(getAllProducts);
+//profile
 router.route("/myproducts").get(verifyToken,getWorkshopProducts);
 router.route("/homeproducts").get(getHomeProducts);
 
@@ -37,11 +38,10 @@ router
   .route("/:id")
   .delete(verifyToken,deleteProduct)
   .get(getOneProduct)
-  .patch(upload.single("photo"), updateProduct);
 
-router
+  router.route("/:id").patch(verifyToken,uploadPhotos, updateProduct);
 
-.route('/:productId/ratings')
+router.route('/:productId/ratings')
 .post(
     verifyToken,
     roleCheck('client'),

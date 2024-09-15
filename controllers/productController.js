@@ -32,7 +32,7 @@ const createProduct = catchAsync(async (req, res, next) => {
   if (!req.body.user) req.body.user = req.user.id;
 
   // Destructure product details from the request body
-  const { name, price, description, category } = req.body;
+  const { name, price, description, category, color, quantity } = req.body;
 
   // Create product with uploaded images
   const product = await Product.create({
@@ -40,6 +40,8 @@ const createProduct = catchAsync(async (req, res, next) => {
     price,
     category,
     description,
+    color,
+    quantity,
     images: images.map(image => image.secure_url),
     cloudinary_ids: images.map(image => image.public_id),
     user: req.user.id,
@@ -106,7 +108,7 @@ const getOneProduct = catchAsync(async (req, res, next) => {
   const productId = req.params.id;
   let product = await Product.findById(productId)
     .populate("ratings")
-    .populate("workshop_id");
+    // .populate("workshop_id");
   if (!product) {
     return next(new AppError("product not found", 404));
   }
@@ -121,22 +123,48 @@ const deleteProduct = catchAsync(async (req, res, next) => {
   res.status(204).json({ status: "success", data: null });
 });
 
-const updateProduct = catchAsync(async (req, res, next) => {
+
+const updateProduct = catchAsync(async (req, res, next) => { 
   const productId = req.params.id;
   let product = await Product.findById(productId);
   if (!product) {
-    return next(new AppError("product not found", 404));
+    return next(new AppError("Product not found", 404));
   }
-  const result = await cloudinary.v2.uploader.upload(req.file.path);
-  if (req.file) {
-    req.body.photo = result.secure_url;
+
+  if (product.cloudinary_ids && product.cloudinary_ids.length > 0) {
+    const deletePromises = product.cloudinary_ids.map((public_id) =>
+      cloudinary.v2.uploader.destroy(public_id)
+    );
+    await Promise.all(deletePromises);
   }
+
+  const imagesToUpload = req.files;
+  if (imagesToUpload.length > 2) {
+    return next(new AppError("You can't upload more than 2 images", 400));
+  }
+
+  const uploadPromises = imagesToUpload.map((file) =>
+    cloudinary.v2.uploader.upload(file.path)
+  );
+  const imagesLinks = await Promise.all(uploadPromises);
+
+  const images = imagesLinks.map((result) => ({
+    secure_url: result.secure_url,
+    public_id: result.public_id,
+  }));
+
+  req.body.images = images.map((img) => img.secure_url);
+  req.body.cloudinary_ids = images.map((img) => img.public_id);
+
+  // المنتج
   const updatedOne = await Product.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
     runValidators: true,
   });
+
   res.status(200).json({ status: "success", data: { updatedOne } });
 });
+
 
 // get home products
 

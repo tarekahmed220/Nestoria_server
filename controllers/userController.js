@@ -39,7 +39,7 @@ const getMyProfile=catchAsync(async(req, res) => {
     let user=await User.findById(userId)//.populate('myCart')
     res.status(200).json({msg:"success",user})
   })
-  const searchbyEmailOrName = catchAsync(async (req, res) => {
+  const searchbyName = catchAsync(async (req, res) => {
     const { fullName } = req.body;
   
     if (!fullName) {
@@ -51,11 +51,12 @@ const getMyProfile=catchAsync(async(req, res) => {
     const users = await User.find({
       fullName:{
       $regex:`^${fullName}`, $options:'i' 
-  }}).select('-password');
+  }}).select('-password').find({_id:{$ne:req.user.id}}) 
   
     if (!users || users.length === 0) {
       return res.status(404).json({ msg: "No users found" });
     }
+    // users.find({_id:{$ne:req.user.id}}) 
     res.status(200).json({ msg: "Success", users });
   });
   
@@ -63,5 +64,5 @@ const getMyProfile=catchAsync(async(req, res) => {
         getUsers,
         getOneUser,
         getMyProfile,
-        searchbyEmailOrName
+        searchbyName
     }

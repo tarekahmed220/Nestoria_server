@@ -13,6 +13,8 @@ import ratingRoutes from "./routes/ratingRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import favoriteRoutes from "./routes/favoriteRoutes.js";
 import workshopRoutes from "./routes/workshopRoutes.js";
+import chatRoutes from "./routes/chatRoutes.js";
+import messageRoutes from "./routes/messageRoutes.js";
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 import { dirname } from "path";
@@ -75,6 +77,8 @@ app.use("/api/v1/fur/rates", ratingRoutes);
 app.use("/api/v1/fur/favorites", favoriteRoutes);
 app.use("/api/v1/fur/products", productRoutes);
 app.use("/api/v1/fur/workshops", workshopRoutes);
+app.use("/api/v1/fur/chat", chatRoutes);
+app.use("/api/v1/fur/message", messageRoutes);
 app.use(cartRoutes);
 app.use(couponRoutes);
 app.use("/api/v1/fur/", profileRoutes);

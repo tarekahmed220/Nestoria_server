@@ -32,13 +32,13 @@ import {
     getUsers,
     getOneUser,
     getMyProfile,
-    searchbyEmailOrName
+    searchbyName
     //  verifyAccount
     } from "../controllers/userController.js"
 const router=express.Router()
 //  router.get('/', roleCheck('admin'),getUsers); 
  router.get('/cart',verifyToken,getCart)
- router.post('/search',searchbyEmailOrName)
+ router.post('/search',verifyToken,searchbyName)
  router.get('/:id', getOneUser); 
 
  router.route('/:productId/ratings')

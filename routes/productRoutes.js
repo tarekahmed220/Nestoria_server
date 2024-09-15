@@ -7,6 +7,7 @@ import { upload } from "../uploads/multer.js";
 import path from "path";
 import {
 
+
     
     getAllProducts,
     getHomeProducts,
@@ -41,16 +42,14 @@ router
 
   router.route("/:id").patch(verifyToken,uploadPhotos, updateProduct);
 
+
 router.route('/:productId/ratings')
 .post(
     verifyToken,
     roleCheck('client'),
     createOneRate)
 router
-.route('/:productId/favorites')
-.patch(
-    verifyToken,
-    roleCheck('client'),
-    createOneFavorite)
+  .route("/:productId/favorites")
+  .patch(verifyToken, roleCheck("client"), createOneFavorite);
 export default router;
 //products/:productId/rating

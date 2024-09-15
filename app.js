@@ -25,8 +25,10 @@ import couponRoutes from "./modules/coupon/coupon.routes.js";
 import profileRoutes from "./modules/profile/profile.routes.js";
 import paymentRoutes from "./modules/payment/payment.routes.js";
 import ordersRoutes from "./modules/checkout/checkout.routes.js";
+import adminRoutes from "./modules/admin/admin.routes.js";
 import updateAccount from "./modules/updateAccount/account.routes.js";
 import shippingAddressRoutes from "./modules/shippingAddress/shippingAddress.routes.js";
+
 
 
 const __dirname = path.resolve();
@@ -34,6 +36,7 @@ const __dirname = path.resolve();
 const allowedOrigins = [
   "http://localhost:3000",
   "http://localhost:4200",
+  "https://nestoria-workshop-front.vercel.app/",
   "https://nestoria-user-front.vercel.app",
 ];
 
@@ -84,10 +87,15 @@ app.use(cartRoutes);
 app.use(couponRoutes);
 app.use("/api/v1/fur/", profileRoutes);
 
+
+
+
 // app.use("/api/v1/fur/password/", passwordRoutes);
 app.use("/api/v1/fur/orders/",ordersRoutes);
 app.use("/api/v1/fur/account/", updateAccount);
 app.use("/api/v1/fur/shippingAddress/",shippingAddressRoutes);
+app.use("/api/v1/admin", adminRoutes);
+
 
 app.all("*", (req, res, next) => {
   return next(

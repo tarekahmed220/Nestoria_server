@@ -61,7 +61,7 @@ const productSchema = new Schema(
       type: Number,
       default: 0,
     },
-    user: {
+    workshop_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,

@@ -28,7 +28,7 @@ const getUsers=catchAsync(async(req, res) => {
 //get user by id
 const getOneUser=catchAsync(async(req, res) => {
         let userId=req.params.id
-        let user=await User.findById(userId).populate('myCart')
+        let user=await User.findById(userId).populate('myCart').populate('products')
       if(!user){
         return next(new AppError("not found user",401))
       }

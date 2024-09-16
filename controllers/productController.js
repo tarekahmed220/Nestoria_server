@@ -88,12 +88,10 @@ const getAllProducts = catchAsync(async (req, res, next) => {
 
   const total = await Product.countDocuments(condition);
 
-  const products = await Product.find(condition)
-    .sort({ createdAt: -1 })
-    .populate("workshop_id")
-    .skip(offset)
-    .limit(limit);
+  const products = await Product.find(condition).sort({ createdAt: -1 }).skip(offset).limit(limit);
 
+    // .populate("workshop_id")
+    
   res.status(200).json({
     status: "success",
     page,
@@ -108,7 +106,7 @@ const getOneProduct = catchAsync(async (req, res, next) => {
   const productId = req.params.id;
   let product = await Product.findById(productId)
     .populate("ratings")
-    // .populate("workshop_id");
+    // .populate("");
   if (!product) {
     return next(new AppError("product not found", 404));
   }

@@ -43,6 +43,25 @@ const checkoutSchema = new Schema(
       enum: ["unpaid", "paid", "shipped"],
       default: "unpaid",
     },
+    shippingAddress:
+      {
+        houseNumber: {
+          type: String,
+          required: true,
+        },
+        apartment: {
+          type: String,
+          required: true,
+        },
+        city: {
+          type: String,
+          required: true,
+        },
+        state: {
+          type: String,
+          required: true,
+        },
+      },
     paymentIntentId: {
       type: String,
       default: "",

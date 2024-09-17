@@ -1,5 +1,7 @@
 import express from "express";
 // import emailCheck from "../middlewares/emailCheck.js"
+import roleCheck from "../middlewares/roleCheck.js";
+
 import verifyAccount from "../middlewares/vieifyAccount.js";
 import {
   signup,
@@ -7,6 +9,10 @@ import {
   forgotPassword,
   resetPassword,
   logout,
+  verifyRole,
+  verifyWorkshopRole,
+  applyAcceptance,
+
 } from "../controllers/authController.js";
 import { validation } from "../validation/validation.js";
 import {
@@ -22,4 +28,18 @@ router.post("/forgotPassword", forgotPassword);
 router.patch("/resetPassword/:token", resetPassword);
 router.patch("/logout",verifyToken, logout);
 router.get("/verify/:token", verifyAccount);
+
+router.get("/verifyrole", verifyToken, roleCheck("admin"), verifyRole);
+router.get(
+  "/verifyworkshoprole",
+  verifyToken,
+  roleCheck("workshop"),
+  verifyWorkshopRole
+);
+router.get(
+  "/applyacceptance",
+  verifyToken,
+  roleCheck("workshop"),
+  applyAcceptance
+);
 export default router;

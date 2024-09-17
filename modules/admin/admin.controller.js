@@ -45,18 +45,6 @@ const getAllClients = catchAsync(async (req, res, next) => {
   });
 });
 
-const deleteClient = catchAsync(async (req, res, next) => {
-  const { email } = req.params;
-  if (email) {
-    await User.findOneAndDelete({ email: email });
-    res.json({ message: "Client account deleted successfully" });
-  } else {
-    return next(
-      new AppError("there is no account with that email address", 404)
-    );
-  }
-});
-
 const getAllWorkshops = catchAsync(async (req, res, next) => {
   const { category, keyword, limit = 6, page = 1 } = req.query;
   console.log("category", category);
@@ -99,4 +87,123 @@ const getAllWorkshops = catchAsync(async (req, res, next) => {
   });
 });
 
-export { getAllClients, getAllWorkshops, deleteClient };
+const deleteClient = catchAsync(async (req, res, next) => {
+  const { email } = req.params;
+  if (email) {
+    await User.findOneAndDelete({ email: email });
+    res.json({ message: "Client account deleted successfully" });
+  } else {
+    return next(
+      new AppError("there is no account with that email address", 404)
+    );
+  }
+});
+
+const updateWorkshop = catchAsync(async (req, res, next) => {
+  const {
+    workshopName,
+    avatar,
+    taxFile,
+    bankStatement,
+    frontID,
+    backID,
+    address,
+  } = req.body;
+
+  const workshopId = req.user._id;
+  if (workshopId) {
+    const workshop = await User.findById(workshopId);
+    if (workshop) {
+      // console.log("workshop", workshop);
+      const updatedWorkshop = await User.findByIdAndUpdate(workshopId, {
+        name: workshopName,
+        address,
+        registerStatus: "pending",
+        registrationDocuments: {
+          nationalIDFront: frontID,
+          nationalIDBack: backID,
+          commercialRecord: taxFile,
+          bankStatement: bankStatement,
+          personalPhoto: avatar,
+        },
+      });
+
+      return res.json({
+        message: "your data updated successfully",
+        updatedWorkshop,
+      });
+    } else {
+      return next(new AppError("There is no workshop founded", 404));
+    }
+  } else {
+    return next(new AppError("There is no user with that id", 404));
+  }
+});
+
+const getWorkshopRequests = catchAsync(async (req, res, next) => {
+  const workshopReq = await User.find({
+    role: "workshop",
+    registerStatus: "pending",
+  }).select("-myCart");
+
+  const numOfReq = await User.countDocuments({
+    role: "workshop",
+    registerStatus: "pending",
+  });
+
+  if (workshopReq) {
+    res.json({ message: "all Requests", numberOfReq: numOfReq, workshopReq });
+  } else {
+    return next(new AppError("There are no requests yet"));
+  }
+});
+
+const acceptanceState = catchAsync(async (req, res, next) => {
+  const { state } = req.body;
+  const { email } = req.params;
+
+  if (!email) {
+    return next(
+      new AppError("there is no account with that email address", 404)
+    );
+  }
+
+  let updateData;
+
+  if (state === "reject") {
+    updateData = {
+      registerStatus: "modify",
+      acceptance: false,
+    };
+  } else {
+    updateData = {
+      registerStatus: "completed",
+      acceptance: true,
+    };
+  }
+
+  const updatedUser = await User.findOneAndUpdate({ email }, updateData, {
+    new: true,
+  });
+
+  if (!updatedUser) {
+    return next(new AppError("No user found with that email", 404));
+  }
+
+  res.json({
+    message:
+      state === "reject"
+        ? "Client account rejected successfully"
+        : "Client account accepted successfully",
+    updatedUser,
+  });
+});
+
+export {
+  getAllClients,
+  getAllWorkshops,
+  deleteClient,
+  updateWorkshop,
+  getWorkshopRequests,
+  acceptanceState,
+};

@@ -166,4 +166,30 @@ const resetPassword = catchAsync(async (req, res, next) => {
   // 6) Log the user in, send JWT
   createSendToken(user, 200, res);
 });
-export { login, signup, forgotPassword, resetPassword };
+
+const verifyRole = catchAsync(async (req, res, next) => {
+  res.json({ message: "Welcome to the Admin Dashboard" });
+});
+const verifyWorkshopRole = catchAsync(async (req, res, next) => {
+  res.json({ message: "Welcome to the workshop dashboard" });
+});
+
+const applyAcceptance = catchAsync(async (req, res, next) => {
+  const { id } = req.user;
+  const user = await User.findOne({ _id: id });
+  if (user) {
+    res.json({ message: "success", state: user.registerStatus });
+  } else {
+    return next(new AppError("there is no user founded", 404));
+  }
+});
+
+export {
+  login,
+  signup,
+  forgotPassword,
+  resetPassword,
+  verifyRole,
+  verifyWorkshopRole,
+  applyAcceptance,
+};

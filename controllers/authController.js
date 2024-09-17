@@ -44,7 +44,9 @@ const login = catchAsync(async (req, res, next) => {
       new AppError("You should verify your account, check your email", 401)
     );
   }
-
+const token=signToken(user._id, user.role);
+user.token=token;
+await user.save();
   createSendToken(user, 200, res);
 });
 
@@ -166,4 +168,16 @@ const resetPassword = catchAsync(async (req, res, next) => {
   // 6) Log the user in, send JWT
   createSendToken(user, 200, res);
 });
-export { login, signup, forgotPassword, resetPassword };
+const logout=catchAsync(async(req,res,next)=>{
+  const user=req.user
+  if(user.token===""||user.token === null){
+    return next(new AppError("you are not logged in",401))
+
+  }
+  await User.findByIdAndUpdate(user.id,{token:""})
+  res.status(200).json({
+    status: "success",
+    message: "logged out successfully",
+  });
+})
+export { login, signup, forgotPassword, resetPassword ,logout};

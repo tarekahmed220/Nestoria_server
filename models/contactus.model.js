@@ -20,6 +20,11 @@ const problemsSchema = new Schema({
   userProblem: {
     type: String,
     required: true,
+  },
+  problemState: {
+    type:String,
+    enm:["pending,solved"],
+    default: "pending",
   }
 });
 

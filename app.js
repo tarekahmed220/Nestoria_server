@@ -29,6 +29,7 @@ import adminRoutes from "./modules/admin/admin.routes.js";
 import updateAccount from "./modules/updateAccount/account.routes.js";
 import shippingAddressRoutes from "./modules/shippingAddress/shippingAddress.routes.js";
 import workshopOrdersRoutes from "./modules/workshopOrders/workshopOrders.routes.js";
+import problemsRoutes from "./modules/contactus/contactus.routes.js";
 
 
 
@@ -88,6 +89,7 @@ app.use(cartRoutes);
 app.use(couponRoutes);
 app.use("/api/v1/fur/", profileRoutes);
 app.use("/workshop",workshopOrdersRoutes);
+app.use("/api/v1/fur/problems",problemsRoutes);
 
 
 

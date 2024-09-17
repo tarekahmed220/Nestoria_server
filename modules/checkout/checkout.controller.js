@@ -16,9 +16,11 @@ const getOrders = catchAsync(async function (req, res) {
 });
 
 const addToOrders = catchAsync(async function (req, res) {
-  const { products, total, paymentIntentId = "", status = "unpaid" } = req.body;
+  const { products, total, paymentIntentId = "", status = "unpaid", shippingAddress} = req.body;
   const userId = req.user.id;
 
+  // console.log(shippingAddress);
+  
   if (
     !products ||
     !total ||
@@ -33,6 +35,7 @@ const addToOrders = catchAsync(async function (req, res) {
     products,
     total,
     status,
+    shippingAddress,
     paymentIntentId: paymentIntentId || "",
   });
   await newOrdersItem.save();

@@ -32,11 +32,13 @@ const createProduct = catchAsync(async (req, res, next) => {
   if (!req.body.user) req.body.user = req.user.id;
 
   // Destructure product details from the request body
-  const { name, price, description, category, color, quantity } = req.body;
+  const { name,nameAR,descriptionAR ,price, description, category, color, quantity } = req.body;
 
   // Create product with uploaded images
   const product = await Product.create({
     name,
+    nameAR,
+    descriptionAR,
     price,
     category,
     description,

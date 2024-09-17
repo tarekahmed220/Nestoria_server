@@ -9,6 +9,12 @@ const productSchema = new Schema(
       minlength: 3,
       maxlength: 100,
     },
+    nameAR:{
+      type: String,
+      trim: true,
+      minlength: 3,
+      maxlength: 100,
+    },
     price: {
       type: Number,
       min: 1,
@@ -19,6 +25,11 @@ const productSchema = new Schema(
       type: String,
       trim: true,
       required: true,
+    },
+    descriptionAR: {
+      type: String,
+      trim: true,
+      
     },
     images: {
       type: [String], 
@@ -50,6 +61,7 @@ const productSchema = new Schema(
       type: String,
       
     },
+   
     ratingsAvg: {
       type: Number,
       default: 0,

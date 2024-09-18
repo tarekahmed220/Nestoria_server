@@ -23,6 +23,7 @@ const messageSchema=new Schema({
       //   }
       sender: { type: mongoose.Schema.ObjectId, ref: "User" },
       content: { type: String, trim: true },
+      photo: { type: String, default: "" },
       chat: { type: mongoose.Schema.ObjectId, ref: "Chat" },
       readBy: [{ type: mongoose.Schema.ObjectId, ref: "User" }],//array of group users
     },

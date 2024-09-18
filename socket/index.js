@@ -23,8 +23,15 @@ const io = new Server(server, {
 });
 const onlineUsers = new Set();
 io.on("connection", (socket) => {
+  // console.log("Received userData:", userData);
+ 
     console.log("Connected to socket.io");
+
     socket.on("setup", (userData) => {
+      if (!userData || !userData._id) {
+        console.error("Invalid userData:", userData);
+        return;
+      }
       socket.join(userData._id);
       socket.emit("connected");
     });

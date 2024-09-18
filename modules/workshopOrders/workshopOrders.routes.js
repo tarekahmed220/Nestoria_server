@@ -4,6 +4,6 @@ import { getOrders } from "./workshopOrders.controller.js";
 
 const workshopOrdersRoutes = express.Router();
 
-workshopOrdersRoutes.get("/getorders", getOrders);
+workshopOrdersRoutes.post("/getorders", getOrders);
 
 export default workshopOrdersRoutes;

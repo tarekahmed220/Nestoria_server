@@ -16,11 +16,17 @@ const getOrders = catchAsync(async function (req, res) {
 });
 
 const addToOrders = catchAsync(async function (req, res) {
-  const { products, total, paymentIntentId = "", status = "unpaid", shippingAddress} = req.body;
+  const {
+    products,
+    total,
+    paymentIntentId = "",
+    status = "unpaid",
+    shippingAddress,
+  } = req.body;
   const userId = req.user.id;
 
   // console.log(shippingAddress);
-  
+
   if (
     !products ||
     !total ||
@@ -51,13 +57,13 @@ const updateStateProduct = catchAsync(async function (req, res) {
   if (!userId) {
     return res.json("User not logged in");
   }
-  if (!orderId || !productId || !color) {    
+  if (!orderId || !productId || !color) {
     return res.json("Enter Data");
   }
   const order = await checkoutModel.findOne({
     userId,
     _id: orderId,
-  });  
+  });
   if (!order) {
     return res.status(404).json({ message: "Order not found" });
   }

@@ -21,7 +21,7 @@ const productSchema = new Schema(
       required: true,
     },
     images: {
-      type: [String], 
+      type: [String],
       default: [],
     },
     category: {
@@ -29,7 +29,7 @@ const productSchema = new Schema(
       required: true,
     },
     cloudinary_ids: {
-      type: [String], 
+      type: [String],
       default: [],
     },
     status: {
@@ -46,9 +46,8 @@ const productSchema = new Schema(
       min: 0,
       max: 100000000000000,
     },
-    color:{
+    color: {
       type: String,
-      
     },
     ratingsAvg: {
       type: Number,

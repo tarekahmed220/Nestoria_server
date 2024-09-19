@@ -6,11 +6,10 @@ import { deleteOne } from "./factory.js";
 import { cloudinary } from "../uploads/cloudinary.js";
 import { HomeProductsModel } from "../models/homeProductModel.js";
 import plimit from "p-limit";
-const uploadPhotos = upload.array('images', 2);
+const uploadPhotos = upload.array("images", 2);
 
 // Cloudinary and product creation logic
 const createProduct = catchAsync(async (req, res, next) => {
-  
   // Ensure that only 2 files are uploaded
   const imagesToUpload = req.files;
   if (imagesToUpload.length > 2) {
@@ -42,9 +41,9 @@ const createProduct = catchAsync(async (req, res, next) => {
     description,
     color,
     quantity,
-    images: images.map(image => image.secure_url),
-    cloudinary_ids: images.map(image => image.public_id),
-    user: req.user.id,
+    images: images.map((image) => image.secure_url),
+    cloudinary_ids: images.map((image) => image.public_id),
+    workshop_id: req.user.id,
   });
   res.status(201).json({
     status: "success",
@@ -88,10 +87,13 @@ const getAllProducts = catchAsync(async (req, res, next) => {
 
   const total = await Product.countDocuments(condition);
 
-  const products = await Product.find(condition).sort({ createdAt: -1 }).skip(offset).limit(limit);
+  const products = await Product.find(condition)
+    .sort({ createdAt: -1 })
+    .skip(offset)
+    .limit(limit);
 
-    // .populate("workshop_id")
-    
+  // .populate("workshop_id")
+
   res.status(200).json({
     status: "success",
     page,
@@ -104,9 +106,8 @@ const getAllProducts = catchAsync(async (req, res, next) => {
 
 const getOneProduct = catchAsync(async (req, res, next) => {
   const productId = req.params.id;
-  let product = await Product.findById(productId)
-    .populate("ratings")
-    // .populate("");
+  let product = await Product.findById(productId).populate("ratings");
+  // .populate("");
   if (!product) {
     return next(new AppError("product not found", 404));
   }
@@ -121,8 +122,7 @@ const deleteProduct = catchAsync(async (req, res, next) => {
   res.status(204).json({ status: "success", data: null });
 });
 
-
-const updateProduct = catchAsync(async (req, res, next) => { 
+const updateProduct = catchAsync(async (req, res, next) => {
   const productId = req.params.id;
   let product = await Product.findById(productId);
   if (!product) {
@@ -163,7 +163,6 @@ const updateProduct = catchAsync(async (req, res, next) => {
   res.status(200).json({ status: "success", data: { updatedOne } });
 });
 
-
 // get home products
 
 const getHomeProducts = catchAsync(async (req, res, next) => {
@@ -173,11 +172,13 @@ const getHomeProducts = catchAsync(async (req, res, next) => {
 });
 const getWorkshopProducts = catchAsync(async (req, res, next) => {
   if (!req.body.user) req.body.user = req.user.id;
-  const workshopProducts = await Product.find(
-    { user: req.body.user }
-  ).sort({ createdAt: -1 });
-  res.status(200).json({ msg: "success" ,  workshopProducts });
-})
+  const workshopProducts = await Product.find({
+    workshop_id: req.body.user,
+  }).sort({
+    createdAt: -1,
+  });
+  res.status(200).json({ msg: "success", workshopProducts });
+});
 export {
   getAllProducts,
   getOneProduct,

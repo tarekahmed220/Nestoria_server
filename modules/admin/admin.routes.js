@@ -6,6 +6,11 @@ import {
   updateWorkshop,
   getWorkshopRequests,
   acceptanceState,
+  createWorkshopTransfer,
+  getAdminBalance,
+  getWorkshopBalance,
+  listCharges,
+  moneyTransferRequests,
 } from "./admin.controller.js";
 import verifyToken from "../../middlewares/verifyToken.js";
 import roleCheck from "../../middlewares/roleCheck.js";
@@ -22,5 +27,20 @@ adminRoutes.put(
 );
 adminRoutes.get("/workshoprequests", getWorkshopRequests);
 adminRoutes.put("/acceptancestate/:email", acceptanceState);
+adminRoutes.post("/create-transfer", createWorkshopTransfer);
+adminRoutes.get("/money-requests", moneyTransferRequests);
+adminRoutes.get("/list-charges", listCharges);
+adminRoutes.get(
+  "/get-admin-balance",
+  verifyToken,
+  roleCheck("admin"),
+  getAdminBalance
+);
+adminRoutes.get(
+  "/get-balance",
+  verifyToken,
+  roleCheck("workshop"),
+  getWorkshopBalance
+);
 
 export default adminRoutes;

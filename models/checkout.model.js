@@ -32,6 +32,10 @@ const checkoutSchema = new Schema(
           enum: ["Processing", "Shipped", "Delivered","Cancelled"],
           default: "Processing",
         },
+        paymentApprove: {
+          type: Boolean,
+          default: false,
+        },
       },
     ],
     total: {
@@ -43,25 +47,24 @@ const checkoutSchema = new Schema(
       enum: ["unpaid", "paid", "shipped"],
       default: "unpaid",
     },
-    shippingAddress:
-      {
-        houseNumber: {
-          type: String,
-          required: true,
-        },
-        apartment: {
-          type: String,
-          required: true,
-        },
-        city: {
-          type: String,
-          required: true,
-        },
-        state: {
-          type: String,
-          required: true,
-        },
+    shippingAddress: {
+      houseNumber: {
+        type: String,
+        required: true,
       },
+      apartment: {
+        type: String,
+        required: true,
+      },
+      city: {
+        type: String,
+        required: true,
+      },
+      state: {
+        type: String,
+        required: true,
+      },
+    },
     paymentIntentId: {
       type: String,
       default: "",

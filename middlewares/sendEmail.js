@@ -19,7 +19,7 @@ async function sendEmail(email, name) {
   const info = await transporter.sendMail({
     from: '"Nestoria🪑" <s4alpy@gmail.com>',
     to: email,
-    subject: "Hello ✔",
+    subject: "Nestoria🪑",
     text: "Verify Your Email?",
     html: templeteEmail(token, name),
   });

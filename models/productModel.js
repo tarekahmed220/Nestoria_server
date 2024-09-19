@@ -9,7 +9,7 @@ const productSchema = new Schema(
       minlength: 3,
       maxlength: 100,
     },
-    nameInArabic:{
+    nameInArabic: {
       type: String,
       trim: true,
       minlength: 3,
@@ -29,10 +29,9 @@ const productSchema = new Schema(
     descriptionInArabic: {
       type: String,
       trim: true,
-      
     },
     images: {
-      type: [String], 
+      type: [String],
       default: [],
     },
     category: {
@@ -40,7 +39,7 @@ const productSchema = new Schema(
       required: true,
     },
     cloudinary_ids: {
-      type: [String], 
+      type: [String],
       default: [],
     },
     status: {
@@ -57,12 +56,12 @@ const productSchema = new Schema(
       min: 0,
       max: 100000000000000,
     },
-    
+
     color: {
       type: [String], // تعريفه كمصفوفة من السلاسل النصية
-      required: true
+      required: true,
     },
-    
+
     ratingsAvg: {
       type: Number,
       default: 0,
@@ -74,7 +73,7 @@ const productSchema = new Schema(
       type: Number,
       default: 0,
     },
-    user: {
+    workshop_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,

@@ -57,11 +57,12 @@ const productSchema = new Schema(
       min: 0,
       max: 100000000000000,
     },
-    color:{
-      type: String,
-      
+    
+    color: {
+      type: [String], // تعريفه كمصفوفة من السلاسل النصية
+      required: true
     },
-   
+    
     ratingsAvg: {
       type: Number,
       default: 0,
@@ -73,7 +74,7 @@ const productSchema = new Schema(
       type: Number,
       default: 0,
     },
-    workshop_id: {
+    user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,

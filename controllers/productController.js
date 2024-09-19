@@ -6,11 +6,10 @@ import { deleteOne } from "./factory.js";
 import { cloudinary } from "../uploads/cloudinary.js";
 import { HomeProductsModel } from "../models/homeProductModel.js";
 import plimit from "p-limit";
-const uploadPhotos = upload.array('images', 2);
+const uploadPhotos = upload.array("images", 2);
 
 // Cloudinary and product creation logic
 const createProduct = catchAsync(async (req, res, next) => {
-  
   // Ensure that only 2 files are uploaded
   const imagesToUpload = req.files;
   if (imagesToUpload.length > 2) {
@@ -32,7 +31,16 @@ const createProduct = catchAsync(async (req, res, next) => {
   if (!req.body.user) req.body.user = req.user.id;
 
   // Destructure product details from the request body
-  const { name,nameInArabic,price, description,descriptionInArabic,category, color, quantity } = req.body;
+  const {
+    name,
+    nameInArabic,
+    price,
+    description,
+    descriptionInArabic,
+    category,
+    color,
+    quantity,
+  } = req.body;
 
   const colorsArray = Array.isArray(color) ? color : [color];
   // Create product with uploaded images
@@ -45,9 +53,9 @@ const createProduct = catchAsync(async (req, res, next) => {
     descriptionInArabic,
     color: colorsArray,
     quantity,
-    images: images.map(image => image.secure_url),
-    cloudinary_ids: images.map(image => image.public_id),
-    user: req.user.id,
+    images: images.map((image) => image.secure_url),
+    cloudinary_ids: images.map((image) => image.public_id),
+    workshop_id: req.user.id,
   });
   res.status(201).json({
     status: "success",
@@ -109,9 +117,8 @@ const getAllProducts = catchAsync(async (req, res, next) => {
 
 const getOneProduct = catchAsync(async (req, res, next) => {
   const productId = req.params.id;
-  let product = await Product.findById(productId)
-    .populate("ratings")
-    // .populate("workshop_id");
+  let product = await Product.findById(productId).populate("ratings");
+  // .populate("workshop_id");
   if (!product) {
     return next(new AppError("product not found", 404));
   }
@@ -129,13 +136,13 @@ const deleteProduct = catchAsync(async (req, res, next) => {
 const updateProduct = catchAsync(async (req, res, next) => {
   const productId = req.params.id;
   let product = await Product.findById(productId);
-  
+
   if (!product) {
     return next(new AppError("Product not found", 404));
   }
 
   const imagesToUpload = req.files;
-  
+
   // إذا لم يتم رفع أي صور جديدة، احتفظ بالصور القديمة
   if (!imagesToUpload || imagesToUpload.length === 0) {
     req.body.images = product.images; // الاحتفاظ بروابط الصور القديمة
@@ -186,11 +193,11 @@ const getHomeProducts = catchAsync(async (req, res, next) => {
 });
 const getWorkshopProducts = catchAsync(async (req, res, next) => {
   if (!req.body.user) req.body.user = req.user.id;
-  const workshopProducts = await Product.find(
-    { user: req.body.user }
-  ).sort({ createdAt: -1 });
-  res.status(200).json({ msg: "success" ,  workshopProducts });
-})
+  const workshopProducts = await Product.find({
+    workshop_id: req.body.user,
+  }).sort({ createdAt: -1 });
+  res.status(200).json({ msg: "success", workshopProducts });
+});
 export {
   getAllProducts,
   getOneProduct,

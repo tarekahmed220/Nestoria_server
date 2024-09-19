@@ -30,7 +30,7 @@ const createProduct = catchAsync(async (req, res, next) => {
 
   // Assign user if not present in request body
   if (!req.body.user) req.body.user = req.user.id;
-
+  
   // Destructure product details from the request body
   const { name,nameInArabic,price, description,descriptionInArabic,category, color, quantity } = req.body;
 
@@ -47,7 +47,7 @@ const createProduct = catchAsync(async (req, res, next) => {
     quantity,
     images: images.map(image => image.secure_url),
     cloudinary_ids: images.map(image => image.public_id),
-    user: req.user.id,
+    workshop_id: req.user.id,
   });
   res.status(201).json({
     status: "success",
@@ -187,7 +187,7 @@ const getHomeProducts = catchAsync(async (req, res, next) => {
 const getWorkshopProducts = catchAsync(async (req, res, next) => {
   if (!req.body.user) req.body.user = req.user.id;
   const workshopProducts = await Product.find(
-    { user: req.body.user }
+    { workshop_id: req.body.user }
   ).sort({ createdAt: -1 });
   res.status(200).json({ msg: "success" ,  workshopProducts });
 })

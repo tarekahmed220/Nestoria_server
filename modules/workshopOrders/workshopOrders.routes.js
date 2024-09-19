@@ -1,9 +1,15 @@
 import express from "express";
 
-import { getOrders } from "./workshopOrders.controller.js";
+import { cancelProduct, getOrders, pendingOrders, shippedOrders, updateOrders } from "./workshopOrders.controller.js";
 
 const workshopOrdersRoutes = express.Router();
 
-workshopOrdersRoutes.get("/getorders", getOrders);
+workshopOrdersRoutes.post("/getorders", getOrders);
+workshopOrdersRoutes.post("/pendingOrders", pendingOrders);
+workshopOrdersRoutes.post("/shippedOrders", shippedOrders);
+workshopOrdersRoutes.put("/updateOrders", updateOrders);
+workshopOrdersRoutes.delete("/cancelProduct", cancelProduct);
+
+
 
 export default workshopOrdersRoutes;

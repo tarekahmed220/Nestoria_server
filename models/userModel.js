@@ -119,7 +119,10 @@ const userSchema = new Schema(
         ref: "Product",
       },
     ],
-
+token:{
+  type:String,
+  default:""
+},
     topSellingProducts: [
       {
         product: {

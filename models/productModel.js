@@ -9,7 +9,7 @@ const productSchema = new Schema(
       minlength: 3,
       maxlength: 100,
     },
-    nameAR:{
+    nameInArabic:{
       type: String,
       trim: true,
       minlength: 3,
@@ -26,7 +26,7 @@ const productSchema = new Schema(
       trim: true,
       required: true,
     },
-    descriptionAR: {
+    descriptionInArabic: {
       type: String,
       trim: true,
       

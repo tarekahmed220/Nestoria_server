@@ -59,7 +59,11 @@ const getMyProfile=catchAsync(async(req, res) => {
     // users.find({_id:{$ne:req.user.id}}) 
     res.status(200).json({ msg: "Success", users });
   });
-  
+const updateProfile=catchAsync(async(req, res) => {
+    let userId=req.user.id
+    let user=await User.findByIdAndUpdate(userId,req.body,{new:true})
+    res.status(200).json({msg:"success",user})
+})  
     export {
         getUsers,
         getOneUser,

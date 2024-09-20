@@ -160,6 +160,14 @@ token:{
       detailedAddress: {
         type: String,
       },
+      photo: {
+        type: String,
+        default:"",
+      },
+      cloudinary_id: {
+        type: String,
+        default:""
+      },
     },
 
     passwordResetToken: String,

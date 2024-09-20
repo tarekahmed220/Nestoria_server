@@ -188,7 +188,6 @@ const verifyRole = catchAsync(async (req, res, next) => {
 const verifyWorkshopRole = catchAsync(async (req, res, next) => {
   res.json({ message: "Welcome to the workshop dashboard" });
 });
-
 const applyAcceptance = catchAsync(async (req, res, next) => {
   const { id } = req.user;
   const user = await User.findOne({ _id: id });

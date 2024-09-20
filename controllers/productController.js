@@ -53,6 +53,7 @@ const createProduct = catchAsync(async (req, res, next) => {
     descriptionInArabic,
     color: colorsArray,
     quantity,
+
     images: images.map((image) => image.secure_url),
     cloudinary_ids: images.map((image) => image.public_id),
     workshop_id: req.user.id,
@@ -193,6 +194,7 @@ const getHomeProducts = catchAsync(async (req, res, next) => {
 });
 const getWorkshopProducts = catchAsync(async (req, res, next) => {
   if (!req.body.user) req.body.user = req.user.id;
+
   const workshopProducts = await Product.find({
     workshop_id: req.body.user,
   }).sort({ createdAt: -1 });

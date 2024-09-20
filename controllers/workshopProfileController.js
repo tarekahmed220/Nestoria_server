@@ -85,44 +85,62 @@ const updateWorkshopProfile = catchAsync(async (req, res, next) => {
   if (!user) {
     return next(new AppError("User not found", 404));
   }
+const { name, description, location, contactEmail,photo, phoneNumber } = req.body;
+  const imageToUpload = req.file;
+  console.log('File Uploaded:', imageToUpload); // Log the file object
 
-  const imageToUpload = req.file; // For single image upload
-  if(user.cloudinary_id===undefined){
+  if (!user.cloudinary_id) {
+    user.cloudinary_id = "";
+  }
 
-user.cloudinary_id="";
-
-
-}
-  // If no new image is provided, retain the existing photo and Cloudinary ID
   if (!imageToUpload) {
     req.body.photo = user.photo || "";
     req.body.cloudinary_id = user.cloudinary_id || "";
   } else {
-    // Upload the new image to Cloudinary
-    const result = await cloudinary.uploader.upload(imageToUpload.path);
+    try {
+      const result = await cloudinary.v2.uploader.upload(imageToUpload.path);
+      console.log('Cloudinary Upload Result:', result); // Log Cloudinary's response
 
-    // Set the new photo URL and Cloudinary ID
-    req.body.photo = result.secure_url;
-    req.body.cloudinary_id = result.public_id;
+      req.body.photo = result.secure_url;
+      req.body.cloudinary_id = result.public_id;
 
-    // Delete the old image from Cloudinary if it exists
-    if (user.cloudinary_id) {
-      await cloudinary.uploader.destroy(user.cloudinary_id);
+      if (user.cloudinary_id) {
+        await cloudinary.uploader.destroy(user.cloudinary_id);
+      }
+    } catch (error) {
+      return next(new AppError('Cloudinary upload failed', 500));
     }
   }
 
-  // Update the user's profile with the new photo and Cloudinary ID
-  const updatedUser = await User.findByIdAndUpdate(userId, req.body, {
-    new: true,
-    runValidators: true,
-  });
+  console.log('Request Body Before Update:', req.body); // Log the request body
+
+  const updatedUser = await User.findByIdAndUpdate(
+    userId, 
+    { 
+      $set: { 
+        photo: req.body.photo,
+        cloudinary_id: req.body.cloudinary_id
+      }
+    }, 
+    {
+      new: true, // Ensure we get the updated document
+      runValidators: true, // Run any validations for the fields
+    }
+  );
+
+  if (!updatedUser) {
+    return next(new AppError('User update failed', 500));
+  }
+
+  console.log('Updated User:', updatedUser); // Log the updated user
 
   res.status(200).json({
     status: "success",
-     updatedUser,
-    
+    updatedUser,
   });
 });
+
+
 
   
 

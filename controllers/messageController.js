@@ -78,9 +78,7 @@ const sendPhoto = catchAsync(async (req, res, next) => {
       path: "chat.users",
       select: "fullName photo email",
     });
-
     await Chat.findByIdAndUpdate(req.body.chatId, { latestMessage: message });
-
     res.json(message);
   } catch (error) {
     res.status(400);

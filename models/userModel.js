@@ -94,6 +94,12 @@ const userSchema = new Schema(
       type: String,
       trim: true,
     },
+    photo:{
+      type:String
+    },
+    cloudinary_id:{
+      type:String
+    },
     balance: {
       type: Number,
       default: 0,
@@ -160,14 +166,7 @@ token:{
       detailedAddress: {
         type: String,
       },
-      photo: {
-        type: String,
-        default:"",
-      },
-      cloudinary_id: {
-        type: String,
-        default:""
-      },
+      
     },
 
     passwordResetToken: String,

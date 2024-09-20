@@ -3,7 +3,9 @@ import AppError from "../handleErrors/appError.js";
 import catchAsync from "../handleErrors/catchAsync.js";
 import { Product } from "../models/productModel.js";
 import Workshop from "../models/workshopModel.js";
-
+import { User } from "../models/userModel.js";
+import { upload } from "../uploads/multer.js";
+import { cloudinary } from "../uploads/cloudinary.js";
 const getProductsByWorkshop = catchAsync(async (req, res, next) => {
   const { workshopId } = req.params;
   const { page = 1, limit = 10 } = req.query;
@@ -76,5 +78,53 @@ const deleteWorkshop = catchAsync(async (req, res, next) => {
     message: "workshop deleted successfully",
   });
 });
+const updateWorkshopProfile = catchAsync(async (req, res, next) => {
+  const userId = req.user.id;
+  const user = await User.findById(userId);
 
-export { getProductsByWorkshop, addWorkshop, deleteWorkshop };
+  if (!user) {
+    return next(new AppError("User not found", 404));
+  }
+
+  const imageToUpload = req.file; // For single image upload
+  if(user.cloudinary_id===undefined){
+
+user.cloudinary_id="";
+
+
+}
+  // If no new image is provided, retain the existing photo and Cloudinary ID
+  if (!imageToUpload) {
+    req.body.photo = user.photo || "";
+    req.body.cloudinary_id = user.cloudinary_id || "";
+  } else {
+    // Upload the new image to Cloudinary
+    const result = await cloudinary.uploader.upload(imageToUpload.path);
+
+    // Set the new photo URL and Cloudinary ID
+    req.body.photo = result.secure_url;
+    req.body.cloudinary_id = result.public_id;
+
+    // Delete the old image from Cloudinary if it exists
+    if (user.cloudinary_id) {
+      await cloudinary.uploader.destroy(user.cloudinary_id);
+    }
+  }
+
+  // Update the user's profile with the new photo and Cloudinary ID
+  const updatedUser = await User.findByIdAndUpdate(userId, req.body, {
+    new: true,
+    runValidators: true,
+  });
+
+  res.status(200).json({
+    status: "success",
+     updatedUser,
+    
+  });
+});
+
+  
+
+  
+export { getProductsByWorkshop, addWorkshop, deleteWorkshop ,updateWorkshopProfile};

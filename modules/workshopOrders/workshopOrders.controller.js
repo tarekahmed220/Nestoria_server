@@ -2,7 +2,7 @@ import catchAsync from "../../handleErrors/catchAsync.js";
 import checkoutModel from "../../models/checkout.model.js";
 
 
-const getValidOrders = async (workshopId) => {
+const getValidOrders = async (_id) => {
   const ordersItems = await checkoutModel
     .find()
     .populate("userId")
@@ -12,7 +12,7 @@ const getValidOrders = async (workshopId) => {
     .map((order) => {
       const filteredProducts = order.products.filter((product) => {
         const productWorkshopId = product.productId?.workshop_id?.toString();
-        return productWorkshopId === workshopId;
+        return productWorkshopId === _id.toString();
       });
 
       if (filteredProducts.length > 0) {
@@ -27,12 +27,12 @@ const getValidOrders = async (workshopId) => {
 };
 
 const getOrders = catchAsync(async function (req, res) {
-  const workshopId = req.body.id;
-  if (!workshopId) {
+  const {_id} = req.user;
+  if (!_id) {
     return res.status(400).json({ message: "Workshop ID is required" });
   }
 
-  const validOrders = await getValidOrders(workshopId);
+  const validOrders = await getValidOrders(_id);
 
   if (validOrders.length === 0) {
     return res
@@ -44,11 +44,12 @@ const getOrders = catchAsync(async function (req, res) {
 });
 
 const pendingOrders = catchAsync(async function (req, res) {
-  const workshopId = req.body.id;
-  if (!workshopId) {
+  const {_id} = req.user;
+  // console.log(_id.toString());
+  if (!_id) {
     return res.status(400).json({ message: "Workshop ID is required" });
   }
-  const validOrders = await getValidOrders(workshopId);
+  const validOrders = await getValidOrders(_id);
   const pending = validOrders.filter((order) =>
     order.products.some((product) => product.deliveryStatus === "Processing")
   );
@@ -61,12 +62,12 @@ const pendingOrders = catchAsync(async function (req, res) {
 });
 
 const shippedOrders = catchAsync(async function (req, res) {
-  const workshopId = req.body.id;
+  const {_id} = req.user;
 
-  if (!workshopId) {
+  if (!_id) {
     return res.status(400).json({ message: "Workshop ID is required" });
   }
-  const validOrders = await getValidOrders(workshopId);
+  const validOrders = await getValidOrders(_id);
   const shipped = validOrders.filter((order) =>
     order.products.some((product) => product.deliveryStatus === "Shipped")
   );
@@ -80,10 +81,10 @@ const shippedOrders = catchAsync(async function (req, res) {
 });
 
 const updateOrders = catchAsync(async function (req, res) {
-  const workshopId = req.body.id;
+  const {_id} = req.user;
   const productId = req.body.productId;
   const orderId = req.body.orderId;  
-  if (!workshopId) {
+  if (!_id) {
     return res.status(400).json({ message: "Workshop ID is required" });
   }
   if (!productId) {
@@ -93,7 +94,7 @@ const updateOrders = catchAsync(async function (req, res) {
     return res.status(400).json({ message: "Order ID is required" });
   }
 
-  const validOrders = await getValidOrders(workshopId);
+  const validOrders = await getValidOrders(_id);
 
   const order = validOrders.find((order) =>
     order.products.some(
@@ -129,11 +130,11 @@ const updateOrders = catchAsync(async function (req, res) {
 });
 
 const cancelProduct = catchAsync(async function (req, res) {
-  const workshopId = req.body.id;
+  const {_id} = req.user;
   const productId = req.body.productId;
   const orderId = req.body.orderId;
 
-  if (!workshopId) {
+  if (!_id) {
     return res.status(400).json({ message: "Workshop ID is required" });
   }
   if (!productId) {
@@ -143,7 +144,7 @@ const cancelProduct = catchAsync(async function (req, res) {
     return res.status(400).json({ message: "Order ID is required" });
   }
 
-  const validOrders = await getValidOrders(workshopId);
+  const validOrders = await getValidOrders(_id);
 
   const order = validOrders.find((order) =>
     order.products.some(

@@ -1,7 +1,6 @@
-
 import "dotenv/config";
 import express from "express";
-import {app,server} from './socket/index.js'
+import { app, server } from "./socket/index.js";
 import { dbConnect } from "./dbConnect.js";
 import { Product } from "./models/productModel.js";
 import AppError from "./handleErrors/appError.js";
@@ -31,8 +30,6 @@ import shippingAddressRoutes from "./modules/shippingAddress/shippingAddress.rou
 import workshopOrdersRoutes from "./modules/workshopOrders/workshopOrders.routes.js";
 import problemsRoutes from "./modules/contactus/contactus.routes.js";
 
-
-
 const __dirname = path.resolve();
 
 const allowedOrigins = [
@@ -58,16 +55,15 @@ app.use(
 app.use(express.json());
 
 // app.use(express.static(__dirname + "../uploads"));//work with react//
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
+dbConnect();
 
-dbConnect()
- 
 //test middleware
-app.use((req,res,next)=>{
-    req.requestTime=new Date().toISOString()
-    next()
-})
+app.use((req, res, next) => {
+  req.requestTime = new Date().toISOString();
+  next();
+});
 
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
@@ -88,18 +84,13 @@ app.use("/api/v1/fur/message", messageRoutes);
 app.use(cartRoutes);
 app.use(couponRoutes);
 app.use("/api/v1/fur/", profileRoutes);
-app.use("/api/v1/fur/workshop",workshopOrdersRoutes);
-app.use("/api/v1/fur/problems",problemsRoutes);
-
-
-
-
+app.use("/api/v1/fur/workshop", workshopOrdersRoutes);
+app.use("/api/v1/fur/problems", problemsRoutes);
 // app.use("/api/v1/fur/password/", passwordRoutes);
-app.use("/api/v1/fur/orders/",ordersRoutes);
+app.use("/api/v1/fur/orders/", ordersRoutes);
 app.use("/api/v1/fur/account/", updateAccount);
-app.use("/api/v1/fur/shippingAddress/",shippingAddressRoutes);
+app.use("/api/v1/fur/shippingAddress/", shippingAddressRoutes);
 app.use("/api/v1/admin", adminRoutes);
-
 
 app.all("*", (req, res, next) => {
   return next(
@@ -107,13 +98,13 @@ app.all("*", (req, res, next) => {
   ); //update here by return//class AppError extends Error
 });
 
-
- app.all('*', (req, res, next) => {
-    return next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));//update here by return//class AppError extends Error
-  });
+app.all("*", (req, res, next) => {
+  return next(
+    new AppError(`Can't find ${req.originalUrl} on this server!`, 404)
+  ); //update here by return//class AppError extends Error
+});
 //exports.ErrorRequestHandler if next function is error
-app.use(globalErrorHandler)
-
+app.use(globalErrorHandler);
 
 server.listen(5000, () => {
   console.log("Server is listening on port 5000");

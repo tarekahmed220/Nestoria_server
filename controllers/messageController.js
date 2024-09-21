@@ -55,14 +55,18 @@ const sendMessage = catchAsync(async (req, res, next) => {
   }
 });
 const sendPhoto = catchAsync(async (req, res, next) => {
-  const { photo, chatId } = req.body;
-  const result = await cloudinary.v2.uploader.upload(req.file.path);
-  if (!chatId) {
-    console.log("Invalid data passed into request");
-    return res.sendStatus(400);
+  if (!req.file) {
+    return res.status(400).json({ status: 'error', message: 'No file uploaded' });
   }
 
-  var newPhoto = {
+  const { chatId } = req.body;
+  const result = await cloudinary.v2.uploader.upload(req.file.path); // Upload to Cloudinary
+
+  if (!chatId) {
+    return res.status(400).json({ status: 'error', message: 'Invalid chatId' });
+  }
+
+  const newPhoto = {
     sender: req.user._id,
     photo: result.secure_url,
     cloudinary_id: result.public_id,
@@ -70,23 +74,22 @@ const sendPhoto = catchAsync(async (req, res, next) => {
   };
 
   try {
-    var message = await Message.create(newPhoto);
+    let message = await Message.create(newPhoto);
 
-    message = await message.populate("sender", "fullName photo");
+    message = await message.populate("sender", "fullName photo")
     message = await message.populate("chat");
-    message = await User.populate(message, {
+    await User.populate(message, {
       path: "chat.users",
       select: "fullName photo email",
     });
+    await Chat.findByIdAndUpdate(chatId, { latestMessage: message });
 
-    await Chat.findByIdAndUpdate(req.body.chatId, { latestMessage: message });
-
-    res.json(message);
+    res.status(200).json(message);
   } catch (error) {
-    res.status(400);
-    throw new Error(error.message);
+    res.status(400).json({ status: 'error', message: error.message });
   }
 });
+
 const deleteMessage = catchAsync(async (req, res, next) => {
   const { messageId } = req.params;
 

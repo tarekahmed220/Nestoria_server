@@ -25,6 +25,7 @@ const getValidOrders = async (_id) => {
 
 const getOrders = catchAsync(async function (req, res) {
   const { _id } = req.user;
+
   if (!_id) {
     return res.status(400).json({ message: "Workshop ID is required" });
   }
@@ -56,6 +57,7 @@ const getOrders = catchAsync(async function (req, res) {
 
 const pendingOrders = catchAsync(async function (req, res) {
   const { _id } = req.user;
+
   if (!_id) {
     return res.status(400).json({ message: "Workshop ID is required" });
   }
@@ -85,6 +87,7 @@ const pendingOrders = catchAsync(async function (req, res) {
 
 const shippedOrders = catchAsync(async function (req, res) {
   const { _id } = req.user;
+
   if (!_id) {
     return res.status(400).json({ message: "Workshop ID is required" });
   }
@@ -113,6 +116,7 @@ const shippedOrders = catchAsync(async function (req, res) {
 const updateOrders = catchAsync(async function (req, res) {
   const { _id } = req.user;
   const { productId, orderId, color } = req.body;
+
   if (!_id) {
     return res.status(400).json({ message: "Workshop ID is required" });
   }
@@ -158,6 +162,7 @@ const updateOrders = catchAsync(async function (req, res) {
 const cancelProduct = catchAsync(async function (req, res) {
   const { _id } = req.user;
   const { productId, orderId, color } = req.body;
+
   if (!_id) {
     return res.status(400).json({ message: "Workshop ID is required" });
   }
@@ -200,6 +205,7 @@ const cancelProduct = catchAsync(async function (req, res) {
     message: "Product cancelled successfully",
     productToCancel,
   });
+
 });
 
 export { getOrders, pendingOrders, shippedOrders, updateOrders, cancelProduct };

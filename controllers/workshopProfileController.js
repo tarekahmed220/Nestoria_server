@@ -3,7 +3,9 @@ import AppError from "../handleErrors/appError.js";
 import catchAsync from "../handleErrors/catchAsync.js";
 import { Product } from "../models/productModel.js";
 import Workshop from "../models/workshopModel.js";
-
+import { User } from "../models/userModel.js";
+import { upload } from "../uploads/multer.js";
+import { cloudinary } from "../uploads/cloudinary.js";
 const getProductsByWorkshop = catchAsync(async (req, res, next) => {
   const { workshopId } = req.params;
   const { page = 1, limit = 10 } = req.query;
@@ -76,5 +78,71 @@ const deleteWorkshop = catchAsync(async (req, res, next) => {
     message: "workshop deleted successfully",
   });
 });
+const updateWorkshopProfile = catchAsync(async (req, res, next) => {
+  const userId = req.user.id;
+  const user = await User.findById(userId);
 
-export { getProductsByWorkshop, addWorkshop, deleteWorkshop };
+  if (!user) {
+    return next(new AppError("User not found", 404));
+  }
+const { name, description, location, contactEmail,photo, phoneNumber } = req.body;
+  const imageToUpload = req.file;
+  console.log('File Uploaded:', imageToUpload); // Log the file object
+
+  if (!user.cloudinary_id) {
+    user.cloudinary_id = "";
+  }
+
+  if (!imageToUpload) {
+    req.body.photo = user.photo || "";
+    req.body.cloudinary_id = user.cloudinary_id || "";
+  } else {
+    try {
+      const result = await cloudinary.v2.uploader.upload(imageToUpload.path);
+      console.log('Cloudinary Upload Result:', result); // Log Cloudinary's response
+
+      req.body.photo = result.secure_url;
+      req.body.cloudinary_id = result.public_id;
+
+      if (user.cloudinary_id) {
+        await cloudinary.uploader.destroy(user.cloudinary_id);
+      }
+    } catch (error) {
+      return next(new AppError('Cloudinary upload failed', 500));
+    }
+  }
+
+  console.log('Request Body Before Update:', req.body); // Log the request body
+
+  const updatedUser = await User.findByIdAndUpdate(
+    userId, 
+    { 
+      $set: { 
+        photo: req.body.photo,
+        cloudinary_id: req.body.cloudinary_id
+      }
+    }, 
+    {
+      new: true, // Ensure we get the updated document
+      runValidators: true, // Run any validations for the fields
+    }
+  );
+
+  if (!updatedUser) {
+    return next(new AppError('User update failed', 500));
+  }
+
+  console.log('Updated User:', updatedUser); // Log the updated user
+
+  res.status(200).json({
+    status: "success",
+    updatedUser,
+  });
+});
+
+
+
+  
+
+  
+export { getProductsByWorkshop, addWorkshop, deleteWorkshop ,updateWorkshopProfile};

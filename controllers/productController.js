@@ -29,7 +29,7 @@ const createProduct = catchAsync(async (req, res, next) => {
 
   // Assign user if not present in request body
   if (!req.body.user) req.body.user = req.user.id;
-
+  
   // Destructure product details from the request body
   const {
     name,
@@ -53,8 +53,9 @@ const createProduct = catchAsync(async (req, res, next) => {
     descriptionInArabic,
     color: colorsArray,
     quantity,
-    images: images.map((image) => image.secure_url),
-    cloudinary_ids: images.map((image) => image.public_id),
+
+    images: images.map(image => image.secure_url),
+    cloudinary_ids: images.map(image => image.public_id),
     workshop_id: req.user.id,
   });
   res.status(201).json({
@@ -193,11 +194,12 @@ const getHomeProducts = catchAsync(async (req, res, next) => {
 });
 const getWorkshopProducts = catchAsync(async (req, res, next) => {
   if (!req.body.user) req.body.user = req.user.id;
-  const workshopProducts = await Product.find({
-    workshop_id: req.body.user,
-  }).sort({ createdAt: -1 });
-  res.status(200).json({ msg: "success", workshopProducts });
-});
+
+  const workshopProducts = await Product.find(
+    { workshop_id: req.body.user }
+  ).sort({ createdAt: -1 });
+  res.status(200).json({ msg: "success" ,  workshopProducts });
+})
 export {
   getAllProducts,
   getOneProduct,

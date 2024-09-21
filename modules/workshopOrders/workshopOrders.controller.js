@@ -1,7 +1,6 @@
 import catchAsync from "../../handleErrors/catchAsync.js";
 import checkoutModel from "../../models/checkout.model.js";
 
-
 const getValidOrders = async (_id) => {
   const ordersItems = await checkoutModel
     .find()
@@ -27,7 +26,8 @@ const getValidOrders = async (_id) => {
 };
 
 const getOrders = catchAsync(async function (req, res) {
-  const {_id} = req.user;
+  const { _id } = req.user;
+  console.log("_id", _id);
   if (!_id) {
     return res.status(400).json({ message: "Workshop ID is required" });
   }
@@ -44,7 +44,7 @@ const getOrders = catchAsync(async function (req, res) {
 });
 
 const pendingOrders = catchAsync(async function (req, res) {
-  const {_id} = req.user;
+  const { _id } = req.user;
   // console.log(_id.toString());
   if (!_id) {
     return res.status(400).json({ message: "Workshop ID is required" });
@@ -62,7 +62,7 @@ const pendingOrders = catchAsync(async function (req, res) {
 });
 
 const shippedOrders = catchAsync(async function (req, res) {
-  const {_id} = req.user;
+  const { _id } = req.user;
 
   if (!_id) {
     return res.status(400).json({ message: "Workshop ID is required" });
@@ -81,9 +81,9 @@ const shippedOrders = catchAsync(async function (req, res) {
 });
 
 const updateOrders = catchAsync(async function (req, res) {
-  const {_id} = req.user;
+  const { _id } = req.user;
   const productId = req.body.productId;
-  const orderId = req.body.orderId;  
+  const orderId = req.body.orderId;
   if (!_id) {
     return res.status(400).json({ message: "Workshop ID is required" });
   }
@@ -130,7 +130,7 @@ const updateOrders = catchAsync(async function (req, res) {
 });
 
 const cancelProduct = catchAsync(async function (req, res) {
-  const {_id} = req.user;
+  const { _id } = req.user;
   const productId = req.body.productId;
   const orderId = req.body.orderId;
 
@@ -169,13 +169,16 @@ const cancelProduct = catchAsync(async function (req, res) {
 
   if (productToCancel) {
     productToCancel.deliveryStatus = "Cancelled";
-    
+
     await checkoutModel.updateOne(
       { _id: order._id, "products.productId": productId },
       { $set: { "products.$.deliveryStatus": productToCancel.deliveryStatus } }
     );
-    
-    res.json({ message: "Product cancelled successfully", product: productToCancel });
+
+    res.json({
+      message: "Product cancelled successfully",
+      product: productToCancel,
+    });
   } else {
     return res.status(404).json({ message: "Product not found in order" });
   }

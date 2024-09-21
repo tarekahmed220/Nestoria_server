@@ -20,6 +20,7 @@
 import { User } from "../models/userModel.js";
 
 import catchAsync from "../handleErrors/catchAsync.js";
+import { Product } from "../models/productModel.js";
 //get all users
 const getUsers = catchAsync(async (req, res) => {
   let users = await User.find();
@@ -34,7 +35,10 @@ const getOneUser = catchAsync(async (req, res) => {
   if (!user) {
     return next(new AppError("not found user", 401));
   }
-  res.status(200).json({ msg: "success", user });
+
+  const targetProducts = await Product.find({ workshop_id: userId });
+
+  res.status(200).json({ msg: "success", user, targetProducts });
 });
 const getMyProfile = catchAsync(async (req, res) => {
   let userId = req.user.id;

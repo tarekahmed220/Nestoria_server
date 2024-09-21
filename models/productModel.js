@@ -62,7 +62,7 @@ const productSchema = new Schema(
       required: true,
     },
 
-    ratingsAvg: {
+    rating: {
       type: Number,
       default: 0,
       min: 0,

@@ -27,7 +27,6 @@ const getValidOrders = async (_id) => {
 
 const getOrders = catchAsync(async function (req, res) {
   const { _id } = req.user;
-  console.log("_id", _id);
   if (!_id) {
     return res.status(400).json({ message: "Workshop ID is required" });
   }

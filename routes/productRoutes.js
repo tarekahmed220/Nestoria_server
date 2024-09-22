@@ -16,7 +16,8 @@ import {
     updateProduct,
     uploadPhotos,
     createProduct,
-    getWorkshopProducts
+    getWorkshopProducts,
+    getWorkshopProductsNoQuantity
   } from "../controllers/productController.js"
   import {
 
@@ -33,6 +34,7 @@ router.post('/', verifyToken,roleCheck('workshop'),uploadPhotos, createProduct);
 router.route("/").get(getAllProducts);
 //profile
 router.route("/myproducts").get(verifyToken,getWorkshopProducts);
+router.route("/getWorkshopProductsNoQuantity").get(verifyToken,getWorkshopProductsNoQuantity);
 router.route("/homeproducts").get(getHomeProducts);
 
 router

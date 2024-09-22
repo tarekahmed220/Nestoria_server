@@ -25,8 +25,6 @@ const addToOrders = catchAsync(async function (req, res) {
   } = req.body;
   const userId = req.user.id;
 
-  // console.log(shippingAddress);
-
   if (
     !products ||
     !total ||

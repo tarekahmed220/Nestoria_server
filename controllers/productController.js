@@ -200,6 +200,19 @@ const getWorkshopProducts = catchAsync(async (req, res, next) => {
   ).sort({ createdAt: -1 });
   res.status(200).json({ msg: "success" ,  workshopProducts });
 })
+
+const getWorkshopProductsNoQuantity = catchAsync(async (req,res,next) => {
+  if (!req.body.user) req.body.user = req.user.id;
+
+  const workshopProducts = await Product.find(
+    { workshop_id: req.body.user, quantity: 0 }
+  ).sort({ createdAt: -1 });
+  if (!workshopProducts.length) {
+    return res.status(404).json({ msg: "Not founded" });
+  }  
+  res.status(200).json({ msg: "success" ,  workshopProducts });
+})
+
 export {
   getAllProducts,
   getOneProduct,
@@ -209,4 +222,5 @@ export {
   uploadPhotos,
   getWorkshopProducts,
   getHomeProducts,
+  getWorkshopProductsNoQuantity,
 };

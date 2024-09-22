@@ -3,6 +3,7 @@ import catchAsync from "../../handleErrors/catchAsync.js";
 import checkoutModel from "../../models/checkout.model.js";
 import emailNotificatoin from "../../middlewares/refundNotification.js";
 import { User } from "../../models/userModel.js";
+import { Product } from "../../models/productModel.js";
 
 const getValidOrders = async (_id) => {
   const ordersItems = await checkoutModel
@@ -41,31 +42,12 @@ const getOrders = catchAsync(async function (req, res) {
   res.json(validOrders);
 });
 
-// const pendingOrders = catchAsync(async function (req, res) {
-//   const { _id } = req.user;
-//   if (!_id) {
-//     return res.status(400).json({ message: "Workshop ID is required" });
-//   }
-//   const validOrders = await getValidOrders(_id);
-//   const pending = validOrders.filter((order) =>
-//     order.products.some((product) => product.deliveryStatus === "Processing")
-//   );
-//   if (pending.length === 0) {
-//     return res
-//       .status(404)
-//       .json({ message: "No pending orders found for this workshop" });
-//   }
-//   res.json(pending);
-// });
-
 const pendingOrders = catchAsync(async function (req, res) {
   const { _id } = req.user;
-
   if (!_id) {
     return res.status(400).json({ message: "Workshop ID is required" });
   }
   const validOrders = await getValidOrders(_id);
-
   const pending = validOrders
     .map((order) => {
       const filteredProducts = order.products.filter(
@@ -88,7 +70,6 @@ const pendingOrders = catchAsync(async function (req, res) {
 
 const shippedOrders = catchAsync(async function (req, res) {
   const { _id } = req.user;
-
   if (!_id) {
     return res.status(400).json({ message: "Workshop ID is required" });
   }
@@ -110,7 +91,6 @@ const shippedOrders = catchAsync(async function (req, res) {
       orders: [],
     });
   }
-
   res.json(shipped);
 });
 
@@ -159,6 +139,7 @@ const updateOrders = catchAsync(async function (req, res) {
   );
   res.json({ message: "Product shipped successfully", productToUpdate });
 });
+
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const cancelProduct = catchAsync(async function (req, res) {
   const { _id } = req.user;
@@ -212,6 +193,13 @@ const cancelProduct = catchAsync(async function (req, res) {
     { $set: { "products.$.deliveryStatus": productToCancel.deliveryStatus } }
   );
 
+  const product = await Product.findById(productToCancel.productId._id);
+  product.quantity += productToCancel.quantity; 
+  await product.save();
+  res.json({
+    message: "Product cancelled successfully",
+    productToCancel,
+  });
   try {
     const refund = await stripe.refunds.create({
       payment_intent: paymentIntentId,
@@ -227,10 +215,6 @@ const cancelProduct = catchAsync(async function (req, res) {
     console.error("Error creating refund:", error);
     throw error;
   }
-  res.json({
-    message: "Product cancelled successfully",
-    productToCancel,
-  });
 });
 
 export { getOrders, pendingOrders, shippedOrders, updateOrders, cancelProduct };

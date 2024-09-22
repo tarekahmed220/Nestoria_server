@@ -29,7 +29,7 @@ const createProduct = catchAsync(async (req, res, next) => {
 
   // Assign user if not present in request body
   if (!req.body.user) req.body.user = req.user.id;
-  
+
   // Destructure product details from the request body
   const {
     name,
@@ -54,8 +54,8 @@ const createProduct = catchAsync(async (req, res, next) => {
     color: colorsArray,
     quantity,
 
-    images: images.map(image => image.secure_url),
-    cloudinary_ids: images.map(image => image.public_id),
+    images: images.map((image) => image.secure_url),
+    cloudinary_ids: images.map((image) => image.public_id),
     workshop_id: req.user.id,
   });
   res.status(201).json({
@@ -119,6 +119,7 @@ const getAllProducts = catchAsync(async (req, res, next) => {
 const getOneProduct = catchAsync(async (req, res, next) => {
   const productId = req.params.id;
   let product = await Product.findById(productId).populate("ratings");
+
   // .populate("workshop_id");
   if (!product) {
     return next(new AppError("product not found", 404));
@@ -194,6 +195,7 @@ const getHomeProducts = catchAsync(async (req, res, next) => {
 });
 const getWorkshopProducts = catchAsync(async (req, res, next) => {
   if (!req.body.user) req.body.user = req.user.id;
+
 
   const workshopProducts = await Product.find(
     { workshop_id: req.body.user }

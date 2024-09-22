@@ -8,7 +8,7 @@ import {
   login,
   forgotPassword,
   resetPassword,
-  logout,
+  
   verifyRole,
   verifyWorkshopRole,
   applyAcceptance,
@@ -26,7 +26,7 @@ router.post("/signup", validation(userValidationSchema), signup);
 router.post("/login", validation(userLogIn), login);
 router.post("/forgotPassword", forgotPassword);
 router.patch("/resetPassword/:token", resetPassword);
-router.patch("/logout",verifyToken, logout);
+
 router.get("/verify/:token", verifyAccount);
 
 router.get("/verifyrole", verifyToken, roleCheck("admin"), verifyRole);

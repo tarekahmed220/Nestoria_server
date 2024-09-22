@@ -235,9 +235,10 @@ const createWorkshopTransfer = catchAsync(async (req, res, next) => {
   try {
     const { amount, connectedAccountId, orderId, userId, productId, color } =
       req.body;
-
+    // reduce 10% of amount
+    const newAmount = amount - amount * 0.1;
     // Create the transfer
-    const transfer = await createTransfer(amount, connectedAccountId);
+    const transfer = await createTransfer(newAmount, connectedAccountId);
 
     const orderObjectId = new mongoose.Types.ObjectId(orderId);
     const userObjectId = new mongoose.Types.ObjectId(userId);

@@ -1,5 +1,8 @@
+import Stripe from "stripe";
 import catchAsync from "../../handleErrors/catchAsync.js";
 import checkoutModel from "../../models/checkout.model.js";
+import emailNotificatoin from "../../middlewares/refundNotification.js";
+import { User } from "../../models/userModel.js";
 
 const getValidOrders = async (_id) => {
   const ordersItems = await checkoutModel
@@ -75,12 +78,10 @@ const pendingOrders = catchAsync(async function (req, res) {
     })
     .filter((order) => order.products.length > 0);
   if (pending.length === 0) {
-    return res
-      .status(200)
-      .json({
-        message: "No pending orders found for this workshop",
-        orders: [],
-      });
+    return res.status(200).json({
+      message: "No pending orders found for this workshop",
+      orders: [],
+    });
   }
   res.json(pending);
 });
@@ -158,7 +159,7 @@ const updateOrders = catchAsync(async function (req, res) {
   );
   res.json({ message: "Product shipped successfully", productToUpdate });
 });
-
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const cancelProduct = catchAsync(async function (req, res) {
   const { _id } = req.user;
   const { productId, orderId, color } = req.body;
@@ -187,12 +188,21 @@ const cancelProduct = catchAsync(async function (req, res) {
       return isMatchingProduct;
     })
   );
+  const paymentIntentId = order.paymentIntentId;
   if (!order || !productToCancel) {
     return res
       .status(404)
       .json({ message: "No product found to cancel for this workshop" });
   }
   productToCancel.deliveryStatus = "Cancelled";
+  console.log("productToCancel", productToCancel);
+  const userId = productToCancel.productId.workshop_id.toString();
+  console.log("userId", userId);
+  const targetUser = await User.findOne({
+    _id: userId,
+  });
+  console.log("targetUser", targetUser);
+
   await checkoutModel.updateOne(
     {
       _id: order._id,
@@ -201,11 +211,26 @@ const cancelProduct = catchAsync(async function (req, res) {
     },
     { $set: { "products.$.deliveryStatus": productToCancel.deliveryStatus } }
   );
+
+  try {
+    const refund = await stripe.refunds.create({
+      payment_intent: paymentIntentId,
+      amount: productToCancel.price * 100, // Amount in cents (e.g., 500 = $5.00)
+    });
+    emailNotificatoin(
+      targetUser.email,
+      targetUser.fullName,
+      productToCancel.price
+    );
+    return refund;
+  } catch (error) {
+    console.error("Error creating refund:", error);
+    throw error;
+  }
   res.json({
     message: "Product cancelled successfully",
     productToCancel,
   });
-
 });
 
 export { getOrders, pendingOrders, shippedOrders, updateOrders, cancelProduct };

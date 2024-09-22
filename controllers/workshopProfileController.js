@@ -87,7 +87,7 @@ const updateWorkshopProfile = catchAsync(async (req, res, next) => {
   }
 const { name, description, location, contactEmail,photo, phoneNumber } = req.body;
   const imageToUpload = req.file;
-  console.log('File Uploaded:', imageToUpload); // Log the file object
+ 
 
   if (!user.cloudinary_id) {
     user.cloudinary_id = "";
@@ -99,7 +99,7 @@ const { name, description, location, contactEmail,photo, phoneNumber } = req.bod
   } else {
     try {
       const result = await cloudinary.v2.uploader.upload(imageToUpload.path);
-      console.log('Cloudinary Upload Result:', result); // Log Cloudinary's response
+    
 
       req.body.photo = result.secure_url;
       req.body.cloudinary_id = result.public_id;
@@ -112,7 +112,7 @@ const { name, description, location, contactEmail,photo, phoneNumber } = req.bod
     }
   }
 
-  console.log('Request Body Before Update:', req.body); // Log the request body
+
 
   const updatedUser = await User.findByIdAndUpdate(
     userId, 
@@ -120,8 +120,10 @@ const { name, description, location, contactEmail,photo, phoneNumber } = req.bod
       $set: { 
         photo: req.body.photo,
         cloudinary_id: req.body.cloudinary_id
-      }
+      },
+      ...req.body
     }, 
+    
     {
       new: true, // Ensure we get the updated document
       runValidators: true, // Run any validations for the fields
@@ -132,7 +134,7 @@ const { name, description, location, contactEmail,photo, phoneNumber } = req.bod
     return next(new AppError('User update failed', 500));
   }
 
-  console.log('Updated User:', updatedUser); // Log the updated user
+ 
 
   res.status(200).json({
     status: "success",

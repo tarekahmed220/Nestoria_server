@@ -85,27 +85,27 @@ const updateWorkshopProfile = catchAsync(async (req, res, next) => {
   if (!user) {
     return next(new AppError("User not found", 404));
   }
-const { name, description, location, contactEmail,photo, phoneNumber } = req.body;
+const { name, description, location, contactEmail, phoneNumber } = req.body;
   const imageToUpload = req.file;
  
 
-  if (!user.cloudinary_id) {
-    user.cloudinary_id = "";
+  if (!user.registrationDocuments.personalCloudinary_id) {
+    user.registrationDocuments.personalCloudinary_id = "";
   }
 
   if (!imageToUpload) {
-    req.body.photo = user.photo || "";
-    req.body.cloudinary_id = user.cloudinary_id || "";
+    req.body.personalPhoto = user.registrationDocuments.personalPhoto || "";
+    req.body.personalCloudinary_id = user.registrationDocuments.personalCloudinary_id || "";
   } else {
     try {
       const result = await cloudinary.v2.uploader.upload(imageToUpload.path);
     
 
-      req.body.photo = result.secure_url;
-      req.body.cloudinary_id = result.public_id;
+      req.body.personalPhoto = result.secure_url;
+      req.body.  personalCloudinary_id = result.public_id;
 
-      if (user.cloudinary_id) {
-        await cloudinary.uploader.destroy(user.cloudinary_id);
+      if (user.registrationDocuments.personalCloudinary_id) {
+        await cloudinary.uploader.destroy(user.registrationDocuments.personalCloudinary_id);
       }
     } catch (error) {
       return next(new AppError('Cloudinary upload failed', 500));
@@ -118,9 +118,11 @@ const { name, description, location, contactEmail,photo, phoneNumber } = req.bod
     userId, 
     { 
       $set: { 
-        photo: req.body.photo,
-        cloudinary_id: req.body.cloudinary_id
-      },
+        
+          'registrationDocuments.personalPhoto': req.body.personalPhoto,
+          'registrationDocuments.personCloudinary_id': req.body.personalCloudinary_id,
+      
+         },
       ...req.body
     }, 
     

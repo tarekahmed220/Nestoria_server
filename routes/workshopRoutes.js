@@ -14,5 +14,5 @@ router.post("/add", addWorkshop);
 router.delete("/delete/:workshopId", deleteWorkshop);
 
 router.get("/:workshopId", getProductsByWorkshop);
-router.patch("/updateworkshop", verifyToken,upload.single("photo"),updateWorkshopProfile);
+router.patch("/updateworkshop", verifyToken,upload.single("personalPhoto"),updateWorkshopProfile);
 export default router;

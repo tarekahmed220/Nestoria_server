@@ -1,37 +1,152 @@
 import mongoose from "mongoose";
-
-const workshopSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: [true, "Workshop name is required"],
-    unique: true,
-    trim: true,
-    minlength: [3, "Workshop name must be at least 3 characters long"],
-    maxlength: [100, "Workshop name cannot exceed 100 characters"],
-  },
-  description: {
-    type: String,
-    required: [true, "Workshop description is required"],
-    minlength: [10, "Description must be at least 10 characters long"],
-    maxlength: [500, "Description cannot exceed 500 characters"],
-  },
-  location: {
-    type: String,
-    required: [true, "Workshop location is required"],
-    trim: true,
-  },
-  contactEmail: {
-    type: String,
-    required: [true, "Contact email is required"],
-    match: [/.+@.+\..+/, "Please provide a valid email address"],
-  },
-  phoneNumber: {
-    type: String,
-    required: [true, "Phone number is required"],
-    match: [/^\d{10}$/, "Phone number must be 10 digits long"],
-  },
+import AppError from "../handleErrors/appError.js";
+import catchAsync from "../handleErrors/catchAsync.js";
+import { Product } from "../models/productModel.js";
+import Workshop from "../models/workshopModel.js";
+import { User } from "../models/userModel.js";
+import { upload } from "../uploads/multer.js";
+import { cloudinary } from "../uploads/cloudinary.js";
+const getProductsByWorkshop = catchAsync(async (req, res, next) => {
+  const { workshopId } = req.params;
+  const { page = 1, limit = 10 } = req.query;
+  const skip = (page - 1) * Number(limit);
+  if (!mongoose.Types.ObjectId.isValid(workshopId)) {
+    return next(new AppError("Invalid workshop ID", 400));
+  }
+  const workshop = await Workshop.findById(workshopId);
+  if (!workshop) {
+    return next(new AppError("Workshop not found", 404));
+  }
+  const products = await Product.find({
+    workshop_id: new mongoose.Types.ObjectId(workshopId),
+  })
+    .populate("workshop_id")
+    .skip(skip)
+    .limit(Number(limit))
+    .exec();
+  console.log(products);
+  const totalProducts = await Product.countDocuments({
+    workshop_id: new mongoose.Types.ObjectId(workshopId),
+  });
+  if (!products || products.length === 0) {
+    return next(new AppError("No products found for this workshop", 404));
+  }
+  res.status(200).json({
+    status: "success",
+    results: products.length,
+    totalProducts,
+    products,
+  });
 });
 
-const Workshop = mongoose.model("Workshop", workshopSchema);
+const addWorkshop = catchAsync(async (req, res, next) => {
+  const { name, description, location, contactEmail, phoneNumber } = req.body;
 
-export default Workshop;
+  const existingWorkshop = await Workshop.findOne({ name });
+  if (existingWorkshop) {
+    return next(new AppError("Workshop with this name already exists", 400));
+  }
+
+  const newWorkshop = await Workshop.create({
+    name,
+    description,
+    location,
+    contactEmail,
+    phoneNumber,
+    createdAt: new Date(),
+  });
+
+  res.status(201).json({
+    status: "success",
+    data: {
+      workshop: newWorkshop,
+    },
+  });
+});
+
+const deleteWorkshop = catchAsync(async (req, res, next) => {
+  const { workshopId } = req.params;
+
+  const workshop = await Workshop.findByIdAndDelete(workshopId);
+
+  if (!workshop) {
+    return next(new AppError("No workshop found with this ID", 404));
+  }
+
+  return res.status(200).json({
+    status: "success",
+    message: "workshop deleted successfully",
+  });
+});
+const updateWorkshopProfile = catchAsync(async (req, res, next) => {
+  const userId = req.user.id;
+  const user = await User.findById(userId);
+
+  if (!user) {
+    return next(new AppError("User not found", 404));
+  }
+const { name, description, location, contactEmail, phoneNumber } = req.body;
+  const imageToUpload = req.file;
+ 
+
+  if (!user.registrationDocuments.personalCloudinary_id) {
+    user.registrationDocuments.personalCloudinary_id = "";
+  }
+
+  if (!imageToUpload) {
+    req.body.personalPhoto = user.registrationDocuments.personalPhoto || "";
+    req.body.personalCloudinary_id = user.registrationDocuments.personalCloudinary_id || "";
+  } else {
+    try {
+      const result = await cloudinary.v2.uploader.upload(imageToUpload.path);
+    
+
+      req.body.personalPhoto = result.secure_url;
+      req.body.  personalCloudinary_id = result.public_id;
+
+      if (user.registrationDocuments.personalCloudinary_id) {
+        await cloudinary.uploader.destroy(user.registrationDocuments.personalCloudinary_id);
+      }
+    } catch (error) {
+      return next(new AppError('Cloudinary upload failed', 500));
+    }
+  }
+
+
+
+  const updatedUser = await User.findByIdAndUpdate(
+    userId, 
+    { 
+      $set: { 
+        
+          'registrationDocuments.personalPhoto': req.body.personalPhoto,
+          'registrationDocuments.personCloudinary_id': req.body.personalCloudinary_id,
+      
+         },
+      ...req.body
+    }, 
+    
+    {
+      new: true, // Ensure we get the updated document
+      runValidators: true, // Run any validations for the fields
+    }
+  );
+
+  if (!updatedUser) {
+    return next(new AppError('User update failed', 500));
+  }
+
+ 
+
+  res.status(200).json({
+    status: "success",
+    updatedUser,
+  });
+});
+
+
+
+  
+
+  
+export { getProductsByWorkshop, addWorkshop, deleteWorkshop ,updateWorkshopProfile};

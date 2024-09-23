@@ -62,17 +62,28 @@ const productSchema = new Schema(
       required: true,
     },
 
-    rating: {
-      type: Number,
-      default: 0,
-      min: 0,
-      max: 5,
-      set: (value) => Math.round(value * 10) / 10, // 4.6666 => 4.7
-    },
-    ratingQuantity: {
-      type: Number,
-      default: 0,
-    },
+    ratings: [
+      {
+        user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+        rating: { type: Number, min: 1, max: 5 },
+        comment: String,
+      },
+    ],
+
+    averageRating: { type: Number, default: 0 },
+
+    // rating: {
+    //   type: Number,
+    //   default: 0,
+    //   min: 0,
+    //   max: 5,
+    //   set: (value) => Math.round(value * 10) / 10, // 4.6666 => 4.7
+    // },
+    // ratingQuantity: {
+    //   type: Number,
+    //   default: 0,
+    // },
+
     workshop_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
@@ -91,11 +102,11 @@ const productSchema = new Schema(
 );
 
 // Virtual populate
-productSchema.virtual("ratings", {
-  ref: "Rating",
-  foreignField: "Product",
-  localField: "_id",
-});
+// productSchema.virtual("ratings", {
+//   ref: "Rating",
+//   foreignField: "Product",
+//   localField: "_id",
+// });
 
 productSchema.virtual("favorites", {
   ref: "Favorite",

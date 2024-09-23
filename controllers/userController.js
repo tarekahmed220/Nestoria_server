@@ -31,7 +31,8 @@ const getOneUser = catchAsync(async (req, res) => {
   let userId = req.params.id;
   let user = await User.findById(userId)
     .populate("myCart")
-    .populate("products");
+    .populate("products")
+    .populate("ratings.user");
   if (!user) {
     return next(new AppError("not found user", 401));
   }

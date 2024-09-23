@@ -94,11 +94,11 @@ const userSchema = new Schema(
       type: String,
       trim: true,
     },
-    photo:{
-      type:String
+    photo: {
+      type: String,
     },
-    cloudinary_id:{
-      type:String
+    cloudinary_id: {
+      type: String,
     },
     balance: {
       type: Number,
@@ -118,6 +118,7 @@ const userSchema = new Schema(
         },
       },
     ],
+    averageRating: { type: Number, default: 0 },
 
     products: [
       {
@@ -163,7 +164,6 @@ const userSchema = new Schema(
       detailedAddress: {
         type: String,
       },
-      
     },
 
     passwordResetToken: String,

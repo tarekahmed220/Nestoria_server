@@ -118,7 +118,10 @@ const getAllProducts = catchAsync(async (req, res, next) => {
 
 const getOneProduct = catchAsync(async (req, res, next) => {
   const productId = req.params.id;
-  let product = await Product.findById(productId).populate("ratings");
+  let product = await Product.findById(productId)
+    .populate("ratings")
+    .populate("ratings.user")
+    .populate("workshop_id");
 
   // .populate("workshop_id");
   if (!product) {
@@ -196,24 +199,24 @@ const getHomeProducts = catchAsync(async (req, res, next) => {
 const getWorkshopProducts = catchAsync(async (req, res, next) => {
   if (!req.body.user) req.body.user = req.user.id;
 
+  const workshopProducts = await Product.find({
+    workshop_id: req.body.user,
+  }).sort({ createdAt: -1 });
+  res.status(200).json({ msg: "success", workshopProducts });
+});
 
-  const workshopProducts = await Product.find(
-    { workshop_id: req.body.user }
-  ).sort({ createdAt: -1 });
-  res.status(200).json({ msg: "success" ,  workshopProducts });
-})
-
-const getWorkshopProductsNoQuantity = catchAsync(async (req,res,next) => {
+const getWorkshopProductsNoQuantity = catchAsync(async (req, res, next) => {
   if (!req.body.user) req.body.user = req.user.id;
 
-  const workshopProducts = await Product.find(
-    { workshop_id: req.body.user, quantity: 0 }
-  ).sort({ createdAt: -1 });
+  const workshopProducts = await Product.find({
+    workshop_id: req.body.user,
+    quantity: 0,
+  }).sort({ createdAt: -1 });
   if (!workshopProducts.length) {
     return res.status(404).json({ msg: "Not founded" });
-  }  
-  res.status(200).json({ msg: "success" ,  workshopProducts });
-})
+  }
+  res.status(200).json({ msg: "success", workshopProducts });
+});
 
 export {
   getAllProducts,

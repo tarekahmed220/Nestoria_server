@@ -15,14 +15,14 @@ const cartSchema = new Schema({
     type: Number,
     required: true,
   },
-  color:{
+  color: {
     type: String,
-    required: true
+    required: true,
   },
-  status:{
+  status: {
     type: String,
     default: "",
-  }
+  },
 });
 
 export default model("cart", cartSchema);

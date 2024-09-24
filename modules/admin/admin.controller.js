@@ -113,8 +113,9 @@ const updateWorkshop = catchAsync(async (req, res, next) => {
     frontID,
     backID,
     address,
+    description,
   } = req.body;
-
+  console.log("description", description);
   const workshopId = req.user._id;
   if (workshopId) {
     const workshop = await User.findById(workshopId);
@@ -124,6 +125,7 @@ const updateWorkshop = catchAsync(async (req, res, next) => {
         name: workshopName,
         address,
         registerStatus: "pending",
+        description: description,
         registrationDocuments: {
           nationalIDFront: frontID,
           nationalIDBack: backID,
@@ -236,7 +238,7 @@ const createWorkshopTransfer = catchAsync(async (req, res, next) => {
     const { amount, connectedAccountId, orderId, userId, productId, color } =
       req.body;
     // reduce 10% of amount
-    const newAmount = amount - amount * 0.1;
+    const newAmount = Math.floor(amount - amount * 0.1);
     // Create the transfer
     const transfer = await createTransfer(newAmount, connectedAccountId);
 

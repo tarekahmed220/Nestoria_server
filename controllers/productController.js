@@ -118,7 +118,10 @@ const getAllProducts = catchAsync(async (req, res, next) => {
 
 const getOneProduct = catchAsync(async (req, res, next) => {
   const productId = req.params.id;
-  let product = await Product.findById(productId).populate("ratings");
+  let product = await Product.findById(productId)
+    .populate("ratings")
+    .populate("ratings.user")
+    .populate("workshop_id");
 
   // .populate("workshop_id");
   if (!product) {
@@ -213,6 +216,7 @@ const getWorkshopProductsNoQuantity = catchAsync(async (req, res, next) => {
   res
     .status(200)
     .json({ msg: "success", workshopProducts: workshopProducts || [] });
+
 });
 
 export {

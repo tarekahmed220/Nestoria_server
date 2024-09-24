@@ -44,7 +44,7 @@ const login = catchAsync(async (req, res, next) => {
       new AppError("You should verify your account, check your email", 401)
     );
   }
-  
+
   createSendToken(user, 200, res);
 });
 
@@ -167,8 +167,6 @@ const resetPassword = catchAsync(async (req, res, next) => {
   createSendToken(user, 200, res);
 });
 
-
-
 const verifyRole = catchAsync(async (req, res, next) => {
   res.json({ message: "Welcome to the Admin Dashboard" });
 });
@@ -180,7 +178,7 @@ const applyAcceptance = catchAsync(async (req, res, next) => {
   const { id } = req.user;
   const user = await User.findOne({ _id: id });
   if (user) {
-    res.json({ message: "success", state: user.registerStatus });
+    res.json({ message: "success", user: user });
   } else {
     return next(new AppError("there is no user founded", 404));
   }
@@ -194,5 +192,4 @@ export {
   verifyRole,
   verifyWorkshopRole,
   applyAcceptance,
-
 };

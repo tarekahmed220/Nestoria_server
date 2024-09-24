@@ -56,7 +56,7 @@ const addToOrders = catchAsync(async function (req, res, next) {
   if (insufficientStock) {
     // Update the cart with the adjusted product quantities
     for (let item of adjustedProducts) {
-      await cartModel.updateOne(
+      await cart.updateOne(
         {
           userId: new mongoose.Types.ObjectId(userId),
           "products.productId": item.productId,
@@ -84,7 +84,7 @@ const addToOrders = catchAsync(async function (req, res, next) {
   await newOrdersItem.save();
 
   // Clear the user's cart after order is placed
-  await cartModel.deleteMany({
+  await cart.deleteMany({
     userId: new mongoose.Types.ObjectId(userId),
   });
 

@@ -61,7 +61,7 @@ const updateCart = catchAsync(async function (req, res) {
     color: color,
   });
   let product = await Product.findById(productId);
-  if (cart) {    
+  if (cart) {
     if (quantity <= product.quantity) {
       cart.quantity = quantity;
       await cart.save();

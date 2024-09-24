@@ -16,18 +16,18 @@ const addToCart = catchAsync(async function (req, res) {
   if (!product) {
     return res.status(404).json({ message: "Product not found" });
   }
-  if (quantity > product.quantity) {
+  if (product.quantity === 0) {
+    return res.json({ message: "Currently unavailable" });
+  }else if (quantity > product.quantity) {
     return res.status(400).json({ message: "This is the maximum." });
   }
   const cartItem = await cartModel.findOne({ userId, productId, color });
   if (!cartItem) {
     const newCartItem = new cartModel({ userId, productId, quantity, color });
     await newCartItem.save();
-
-    return res.json({ id: newCartItem._id });
+    return res.json({message:"Product added to cart", id: newCartItem._id });
   }
-
-  res.json({ message: "Item already in cart" });
+  res.status(400).json({ message: "Item already in cart" });
 });
 
 const getCartCount = catchAsync(async function (req, res) {
@@ -61,7 +61,7 @@ const updateCart = catchAsync(async function (req, res) {
     color: color,
   });
   let product = await Product.findById(productId);
-  if (cart) {    
+  if (cart) {
     if (quantity <= product.quantity) {
       cart.quantity = quantity;
       await cart.save();

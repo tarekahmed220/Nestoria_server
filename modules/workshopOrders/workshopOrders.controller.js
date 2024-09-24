@@ -27,6 +27,181 @@ const getValidOrders = async (_id) => {
     .filter((order) => order !== null);
 };
 
+// const getDashboard = catchAsync(async function (req, res) {
+//   const { _id } = req.user;
+//   if (!_id) {
+//     return res.status(400).json({ message: "Workshop ID is required" });
+//   }
+//   const validOrders = await getValidOrders(_id);
+//   if (validOrders.length === 0) {
+//     return res
+//       .status(404)
+//       .json({ message: "No orders found for this workshop" });
+//   }
+
+//   const allProducts = validOrders.reduce((acc, order) => {
+//     return acc.concat(order.products);
+//   }, []);
+
+//   // جمع جميع المنتجات التي تم تسليمها
+//   const deliveredProducts = allProducts.filter(
+//     (product) => product.deliveryStatus === "Delivered"
+//   );
+
+//   // جمع عدد مرات بيع كل منتج
+//   const soldProductsCount = allProducts.reduce((acc, product) => {
+//     if (!acc[product.id]) {
+//       acc[product.id] = {
+//         name: product.name,
+//         count: 0, // Initialize the count for each product
+//       };
+//     }
+//     acc[product.id].count += 1; // Increment the count for this product
+//     return acc;
+//   }, {});
+
+//   // Convert the soldProductsCount object to an array
+//   const soldProductsArray = Object.values(soldProductsCount);
+
+//   // Extract unique customers with their details and total delivered price
+//   const uniqueCustomers = validOrders.reduce((acc, order) => {
+//     const customer = order.userId; // Assume userId contains customer info
+//     const shippingAddress = order.shippingAddress || {}; // Assume shippingAddress is present in the order
+//     const customerId = customer.id;
+
+//     // Find or create the customer entry
+//     let customerEntry = acc.find(
+//       (existingCustomer) => existingCustomer.id === customerId
+//     );
+//     if (!customerEntry) {
+//       customerEntry = {
+//         id: customerId,
+//         fullName: customer.fullName,
+//         phone: customer.phone,
+//         address: customer.address,
+//         shippingAddress: shippingAddress, // Add shipping address
+//         totalDeliveredPrice: 0, // Initialize total delivered price
+//       };
+//       acc.push(customerEntry);
+//     }
+
+//     // Calculate total delivered price for the current order
+//     const deliveredPrice = order.products
+//       .filter((product) => product.deliveryStatus === "Delivered")
+//       .reduce((sum, product) => sum + (product.price || 0), 0);
+
+//     customerEntry.totalDeliveredPrice += deliveredPrice; // Add delivered price to the customer
+
+//     return acc;
+//   }, []);
+
+//   console.log(uniqueCustomers.length);
+
+//   res.json({
+//     allProducts: allProducts,
+//     deliveredProducts: deliveredProducts, // Include all delivered products in the response
+//     customers: uniqueCustomers,
+//     soldProducts: soldProductsArray, // Include sold products with their count in the response
+//   });
+// });
+
+const getDashboard = catchAsync(async function (req, res) {
+  const { _id } = req.user;  
+  if (!_id) {
+    return res.status(400).json({ message: "Workshop ID is required" });
+  }
+  const validOrders = await getValidOrders(_id);
+  if (validOrders.length === 0) {
+    return res.status(404).json({ message: "No orders found for this workshop" });
+  }  
+
+  const allProducts = validOrders.reduce((acc, order) => {
+    return acc.concat(order.products);
+  }, []);
+
+  // جمع جميع المنتجات التي تم تسليمها
+  const deliveredProducts = allProducts.filter(
+    (product) => product.deliveryStatus === "Delivered"
+  );  
+
+  // حساب عدد كل منتج تم تسليمه بشكل فردي
+  const soldProductsCount = deliveredProducts.reduce((acc, product) => {
+    if (!acc[product.productId.id]) {
+      acc[product.productId.id] = {
+        name: product.productId.name,
+        color: product.color,
+        count: 0, // Initialize the count for each delivered product
+      };
+    }
+    acc[product.productId.id].count += product.quantity; // Increment the count for this product
+    return acc;
+  }, {});
+
+  // حساب المجموع الكلي لكل المنتجات المباعة
+  const totalSoldCount = deliveredProducts.reduce(
+    (sum, product) => sum + product.quantity,
+    0
+  );
+
+  // تحويل كائن soldProductsCount إلى مصفوفة وفرزها بناءً على الكمية
+  const soldProductsArray = Object.values(soldProductsCount)
+    .sort((a, b) => b.count - a.count) // فرز المنتجات تنازليًا حسب عدد المبيعات
+    .slice(0, 3) // أخذ أول 3 منتجات فقط
+    .map(product => ({
+      ...product,
+      percentage: ((product.count / totalSoldCount) * 100).toFixed(2) + "%" // حساب النسبة المئوية
+    }));
+
+  // Extract unique customers with their details and total delivered price
+  const uniqueCustomers = validOrders.reduce((acc, order) => {    
+    const customer = order.userId; // Assume userId contains customer info
+  
+    // تحقق مما إذا كان الزبون موجودًا (قد يكون تم حذف حسابه)
+    if (!customer || !customer.id) {
+      console.warn(`Skipping order with missing or deleted customer data: ${order._id}`);
+      return acc; // تجاهل هذا الطلب إذا كان الزبون غير موجود
+    }
+  
+    const shippingAddress = order.shippingAddress || {}; // Assume shippingAddress is present in the order
+    const customerId = customer.id;
+  
+    // Find or create the customer entry
+    let customerEntry = acc.find(
+      (existingCustomer) => existingCustomer.id === customerId
+    );
+    
+    if (!customerEntry) {
+      customerEntry = {
+        id: customerId,
+        fullName: customer.fullName,
+        phone: customer.phone,
+        address: customer.address,
+        shippingAddress: shippingAddress, // Add shipping address
+        totalDeliveredPrice: 0, // Initialize total delivered price
+      };
+      acc.push(customerEntry);
+    }
+  
+    // Calculate total delivered price for the current order
+    const deliveredPrice = order.products
+      .filter((product) => product.deliveryStatus === "Delivered")
+      .reduce((sum, product) => sum + (product.price || 0), 0);
+  
+    customerEntry.totalDeliveredPrice += deliveredPrice; // Add delivered price to the customer
+  
+    return acc;
+  }, []);
+  
+  
+  res.json({
+    allProducts: allProducts,
+    deliveredProducts: deliveredProducts,
+    topSoldProducts: soldProductsArray,
+    customers: uniqueCustomers,
+  });
+});
+
+
 const getOrders = catchAsync(async function (req, res) {
   const { _id } = req.user;
 
@@ -194,7 +369,7 @@ const cancelProduct = catchAsync(async function (req, res) {
   );
 
   const product = await Product.findById(productToCancel.productId._id);
-  product.quantity += productToCancel.quantity; 
+  product.quantity += productToCancel.quantity;
   await product.save();
   res.json({
     message: "Product cancelled successfully",
@@ -217,4 +392,11 @@ const cancelProduct = catchAsync(async function (req, res) {
   }
 });
 
-export { getOrders, pendingOrders, shippedOrders, updateOrders, cancelProduct };
+export {
+  getOrders,
+  pendingOrders,
+  shippedOrders,
+  updateOrders,
+  cancelProduct,
+  getDashboard,
+};

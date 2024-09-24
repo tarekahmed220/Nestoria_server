@@ -212,10 +212,11 @@ const getWorkshopProductsNoQuantity = catchAsync(async (req, res, next) => {
     workshop_id: req.body.user,
     quantity: 0,
   }).sort({ createdAt: -1 });
-  if (!workshopProducts.length) {
-    return res.status(404).json({ msg: "Not founded" });
-  }
-  res.status(200).json({ msg: "success", workshopProducts });
+
+  res
+    .status(200)
+    .json({ msg: "success", workshopProducts: workshopProducts || [] });
+
 });
 
 export {

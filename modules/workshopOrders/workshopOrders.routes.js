@@ -2,6 +2,7 @@ import express from "express";
 
 import {
   cancelProduct,
+  getDashboard,
   getOrders,
   pendingOrders,
   shippedOrders,
@@ -16,5 +17,6 @@ workshopOrdersRoutes.get("/pendingOrders", verifyToken, pendingOrders);
 workshopOrdersRoutes.get("/shippedOrders", verifyToken, shippedOrders);
 workshopOrdersRoutes.put("/updateOrders", verifyToken, updateOrders);
 workshopOrdersRoutes.delete("/cancelProduct", verifyToken, cancelProduct);
+workshopOrdersRoutes.get("/getDashboard", verifyToken, getDashboard);
 
 export default workshopOrdersRoutes;

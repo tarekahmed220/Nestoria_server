@@ -71,4 +71,22 @@ const fetchChats = asyncHandler(async (req, res) => {
     throw new Error(error.message);
   }
 });
-export { accessChat, fetchChats }
+const getChatsForUser = async (userId) => {
+  try {
+    let chats = await Chat.find({ users: { $elemMatch: { $eq: userId } } })
+      .populate("users", "-password")
+      .populate("latestMessage")
+      .sort({ updatedAt: -1 });
+
+    chats = await User.populate(chats, {
+      path: "latestMessage.sender",
+      select: "fullName photo email",
+    });
+
+    return chats;
+  } catch (error) {
+    throw new Error("Error fetching chats: " + error.message);
+  }
+};
+
+export { accessChat, fetchChats,getChatsForUser }

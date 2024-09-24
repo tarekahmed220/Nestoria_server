@@ -2,6 +2,7 @@ import { User } from "../../models/userModel.js";
 
 import catchAsync from "../../handleErrors/catchAsync.js";
 import { Product } from "../../models/productModel.js";
+import checkoutModel from "../../models/checkout.model.js";
 
 //get user by id
 const getOneUser = catchAsync(async (req, res) => {
@@ -32,6 +33,8 @@ const addReview = catchAsync(async (req, res, next) => {
     workshopComment,
     workshop_id,
     productId,
+    orderId,
+    color,
   } = req.body;
   let userId = req.user.id;
 
@@ -74,10 +77,32 @@ const addReview = catchAsync(async (req, res, next) => {
     targetProduct.ratings.reduce((acc, item) => item.rating + acc, 0) /
     targetProduct.ratings.length;
 
-  // Save both workshop user and product
-  await Promise.all([user.save(), targetProduct.save()]);
+  // find target Order to adjust isRated attr
+  const targetOrder = await checkoutModel.findOne({
+    _id: orderId,
+    "products.productId": productId,
+    "products.color": color,
+  });
 
-  res.status(200).json({ msg: "success", targetProduct });
+  if (!targetOrder) {
+    return next(new AppError("Order not found", 401));
+  }
+  const targetProductWithReview = targetOrder.products.find(
+    (product) =>
+      product.productId.toString() === String(productId) &&
+      product.color === color
+  );
+
+  if (!targetProductWithReview) {
+    return next(new AppError("Product not found in the order"));
+  }
+  targetProductWithReview.isRated = true;
+
+  console.log("targetProductWithReview", targetProductWithReview);
+  // Save both workshop user and product
+  await Promise.all([user.save(), targetProduct.save(), targetOrder.save()]);
+
+  res.status(200).json({ msg: "success", targetOrder });
 });
 
 export { getOneUser, modifyLoginStatus, addReview };

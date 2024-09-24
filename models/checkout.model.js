@@ -29,10 +29,14 @@ const checkoutSchema = new Schema(
         },
         deliveryStatus: {
           type: String,
-          enum: ["Processing", "Shipped", "Delivered","Cancelled"],
+          enum: ["Processing", "Shipped", "Delivered", "Cancelled"],
           default: "Processing",
         },
         paymentApprove: {
+          type: Boolean,
+          default: false,
+        },
+        isRated: {
           type: Boolean,
           default: false,
         },

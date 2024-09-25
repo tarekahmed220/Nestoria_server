@@ -73,7 +73,7 @@ io.on("connection", (socket) => {
       console.log("Chat data:", newMessageReceived.chat);
       // تحديث قائمة المحادثات لكل مستخدم مشارك في المحادثة
       chat.users.forEach(async (user) => {
-        if (user._id == newMessageReceived.sender._id) {
+        if (newMessageReceived.sender && user._id === newMessageReceived.sender._id) {
           return; // لا نرسل للمستخدم المرسل نفسه
         }
     

@@ -164,6 +164,10 @@ const userSchema = new Schema(
       detailedAddress: {
         type: String,
       },
+      personalCloudinary_id:{
+        type:String
+      }
+      
     },
 
     passwordResetToken: String,

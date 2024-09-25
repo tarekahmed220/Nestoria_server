@@ -40,14 +40,21 @@ const sendMessage = catchAsync(async (req, res, next) => {
     var message = await Message.create(newMessage);
 
     message = await message.populate("sender", "fullName photo");
-    message = await message.populate("chat");
+    message = await message.populate({
+      path: 'chat',
+      populate: {
+        path: 'users', // تأكد من جلب الـ users عند جلب الـ chat
+        select: 'fullName photo email'
+      }
+    });
     message = await User.populate(message, {
       path: "chat.users",
       select: "fullName photo email",
     });
-
+   
+console.log("Populated message:", message);
     await Chat.findByIdAndUpdate(req.body.chatId, { latestMessage: message });
-
+    console.log("Chat object with users:", message.chat);
     res.json(message);
   } catch (error) {
     res.status(400);

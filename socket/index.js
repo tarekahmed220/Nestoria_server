@@ -49,7 +49,14 @@ io.on("connection", (socket) => {
         console.error("Invalid userData:", userData);
         return;
       }
+     
       socket.join(userData._id);
+    
+    // إضافة المستخدم إلى قائمة المتصلين
+    onlineUsers.add(userData._id);
+
+    // إرسال حالة الاتصال لجميع المستخدمين
+    io.emit("onlineUsers", Array.from(onlineUsers));
       socket.emit("connected");
     });
     socket.on("new message", async (newMessageReceived) => {
@@ -90,37 +97,24 @@ io.on("connection", (socket) => {
     socket.on("stop typing", (room) => socket.in(room).emit("stop typing"));
    
 
-  //   socket.on("new message", (newMessageRecieved) => {
-  //     var chat = newMessageRecieved.chat;
-  // console,log(chat,"chat")
-  //     if (!chat.users){ console.log("chat.users not defined");return;}
-  
-  //     chat.users.forEach(async(user) => {
-  //       if (user._id == newMessageRecieved.sender._id) {console.log("user._id == newMessageRecieved.sender._id");return;}
-  
-  //       socket.in(user._id).emit("message recieved", newMessageRecieved);
-  //       try
-  //       {
-  //         const updatedChats=await getChatsForUser(user._id)
-  //       socket.in(user._id).emit("refresh chats", updatedChats)//getupdatedConversation(newMessageRecieved));
-  //       }catch(error)
-  //       {
-  //         console.log(error)
-  //       }
-  //     });
-  //   });
 
 
 
     socket.off("setup", () => {
       console.log("USER DISCONNECTED");
+      // onlineUsers?.delete(user?._id?.toString());
+      io.emit("onlineUsers", Array.from(onlineUsers));
       socket.leave(userData._id);
     });
 
     
 socket.on("disconnect", async() => {
         console.log("disconnected")
-    
+        onlineUsers.forEach((user)=>{
+          if (Array.from(onlineUsers).includes(user?._id?.toString())) {
+            onlineUsers?.delete(user?._id?.toString());
+  }  })
+    io.emit("onlineUsers", Array.from(onlineUsers));
     })
     
 

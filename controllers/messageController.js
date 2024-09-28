@@ -52,9 +52,8 @@ const sendMessage = catchAsync(async (req, res, next) => {
       select: "fullName photo email",
     });
    
-console.log("Populated message:", message);
     await Chat.findByIdAndUpdate(req.body.chatId, { latestMessage: message });
-    console.log("Chat object with users:", message.chat);
+  
     res.json(message);
   } catch (error) {
     res.status(400);

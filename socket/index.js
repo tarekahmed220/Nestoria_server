@@ -62,18 +62,16 @@ io.on("connection", (socket) => {
     socket.on("new message", async (newMessageReceived) => {
       const chat = newMessageReceived.chat;
       console.log("New message received:", newMessageReceived);
-
       if (!chat) {
         console.log("chat.users not defined");
         return;
       }
     
-      // إرسال الرسالة إلى جميع المستخدمين في الغرفة
       socket.to(chat._id).emit("receive message", newMessageReceived);
       console.log("Chat data:", newMessageReceived.chat);
       // تحديث قائمة المحادثات لكل مستخدم مشارك في المحادثة
       chat.users.forEach(async (user) => {
-        if (user._id == newMessageReceived.sender._id) {
+        if (newMessageReceived.sender && user._id === newMessageReceived.sender._id) {
           return; // لا نرسل للمستخدم المرسل نفسه
         }
     
@@ -90,6 +88,7 @@ io.on("connection", (socket) => {
     });
     
     socket.on("join chat", (room) => {
+      console.log(`User ${socket.id} joined room ${room}`); 
       socket.join(room);
       console.log(`User ${socket.id} joined room ${room}`);
     });

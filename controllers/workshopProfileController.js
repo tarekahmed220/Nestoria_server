@@ -85,9 +85,8 @@ const updateWorkshopProfile = catchAsync(async (req, res, next) => {
   if (!user) {
     return next(new AppError("User not found", 404));
   }
-const { name, description, location, contactEmail, phoneNumber } = req.body;
+  const { name, description, location, contactEmail, phoneNumber } = req.body;
   const imageToUpload = req.file;
- 
 
   if (!user.registrationDocuments.personalCloudinary_id) {
     user.registrationDocuments.personalCloudinary_id = "";
@@ -95,37 +94,36 @@ const { name, description, location, contactEmail, phoneNumber } = req.body;
 
   if (!imageToUpload) {
     req.body.personalPhoto = user.registrationDocuments.personalPhoto || "";
-    req.body.personalCloudinary_id = user.registrationDocuments.personalCloudinary_id || "";
+    req.body.personalCloudinary_id =
+      user.registrationDocuments.personalCloudinary_id || "";
   } else {
     try {
       const result = await cloudinary.v2.uploader.upload(imageToUpload.path);
-    
 
       req.body.personalPhoto = result.secure_url;
-      req.body.  personalCloudinary_id = result.public_id;
+      req.body.personalCloudinary_id = result.public_id;
 
       if (user.registrationDocuments.personalCloudinary_id) {
-        await cloudinary.uploader.destroy(user.registrationDocuments.personalCloudinary_id);
+        await cloudinary.uploader.destroy(
+          user.registrationDocuments.personalCloudinary_id
+        );
       }
     } catch (error) {
-      return next(new AppError('Cloudinary upload failed', 500));
+      return next(new AppError("Cloudinary upload failed", 500));
     }
   }
 
-
-
   const updatedUser = await User.findByIdAndUpdate(
-    userId, 
-    { 
-      $set: { 
-        
-          'registrationDocuments.personalPhoto': req.body.personalPhoto,
-          'registrationDocuments.personCloudinary_id': req.body.personalCloudinary_id,
-      
-         },
-      ...req.body
-    }, 
-    
+    userId,
+    {
+      $set: {
+        "registrationDocuments.personalPhoto": req.body.personalPhoto,
+        "registrationDocuments.personCloudinary_id":
+          req.body.personalCloudinary_id,
+      },
+      ...req.body,
+    },
+
     {
       new: true, // Ensure we get the updated document
       runValidators: true, // Run any validations for the fields
@@ -133,10 +131,8 @@ const { name, description, location, contactEmail, phoneNumber } = req.body;
   );
 
   if (!updatedUser) {
-    return next(new AppError('User update failed', 500));
+    return next(new AppError("User update failed", 500));
   }
-
- 
 
   res.status(200).json({
     status: "success",
@@ -144,8 +140,9 @@ const { name, description, location, contactEmail, phoneNumber } = req.body;
   });
 });
 
-
-
-
-  
-export { getProductsByWorkshop, addWorkshop, deleteWorkshop ,updateWorkshopProfile};
+export {
+  getProductsByWorkshop,
+  addWorkshop,
+  deleteWorkshop,
+  updateWorkshopProfile,
+};

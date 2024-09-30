@@ -5,7 +5,7 @@ const couponSchema = new Schema({
   code: { type: String, required: true, unique: true },
   startDate: { type: String, required: true },
   endDate: { type: String, required: true },
-  status: { type: String, enum: ["active", "notActive"], default: "notActive" },
+  status: { type: Boolean, default: false },
 });
 
 const couponModel = model("Coupon", couponSchema);

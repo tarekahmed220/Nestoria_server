@@ -118,7 +118,7 @@ const getDashboard = catchAsync(async function (req, res) {
   }, []);
 
   const deliveredProducts = allProducts.filter(
-    (product) => product.deliveryStatus === "Delivered"
+    (product) => product.deliveryStatus === "Delivered" && product.paymentApprove
   );
 
   // حساب عدد المنتجات التي تم بيعها
@@ -181,7 +181,7 @@ const getDashboard = catchAsync(async function (req, res) {
     }
 
     const deliveredPrice = order.products
-      .filter((product) => product.deliveryStatus === "Delivered")
+      .filter((product) => product.deliveryStatus === "Delivered" && product.paymentApprove)
       .reduce((sum, product) => sum + (product.price * product.quantity || 0), 0);
 
     customerEntry.totalDeliveredPrice += deliveredPrice;

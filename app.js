@@ -82,7 +82,7 @@ app.use("/api/v1/fur/workshops", workshopRoutes);
 app.use("/api/v1/fur/chat", chatRoutes);
 app.use("/api/v1/fur/message", messageRoutes);
 app.use(cartRoutes);
-app.use(couponRoutes);
+app.use("/api/v1/fur/coupons",couponRoutes);
 app.use("/api/v1/fur/", profileRoutes);
 app.use("/api/v1/fur/workshop", workshopOrdersRoutes);
 app.use("/api/v1/fur/problems", problemsRoutes);

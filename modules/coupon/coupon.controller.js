@@ -12,6 +12,9 @@ const createCoupon = catchAsync(async function (req, res) {
   if (!discount || !code || !startDate || !endDate) {
     return res.status(400).json({ message: "Enter info coupon" });
   }
+  if (new Date(startDate) > new Date(endDate)) {
+    return res.status(400).json({ message: "Start date cannot be after end date" });
+  }
   const codeCoupon = await couponModel.findOne({ code });
   if (codeCoupon) {
     return res
@@ -51,6 +54,15 @@ const updateCoupon = catchAsync(async function (req, res) {
 
   if (!discount || !code || !startDate || !endDate) {
     return res.status(400).json({ message: "Enter info coupon" });
+  }
+  if (new Date(startDate) > new Date(endDate)) {
+    return res.status(400).json({ message: "Start date cannot be after end date" });
+  }
+  const codeCoupon = await couponModel.findOne({ code });
+  if (codeCoupon) {
+    return res
+      .status(400)
+      .json({ message: "Coupon with this code already exists" });
   }
   const today = new Date().toISOString().split("T")[0];
   const updatedCoupon = await couponModel.findByIdAndUpdate(
